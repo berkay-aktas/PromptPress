@@ -8,6 +8,9 @@ export interface BlogDoc extends Document {
   publishedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+
+  author?: string | null;
+  //authorId?: Types.ObjectId | null;
 }
 
 const BlogSchema = new Schema<BlogDoc>(
@@ -23,6 +26,9 @@ const BlogSchema = new Schema<BlogDoc>(
       },
     errorMessage: { type: String, default: null },
     publishedAt: { type: Date, default: null },
+
+    author: { type: String, default: null },
+    //authorId: { type: Schema.Types.ObjectId, ref: "User", default: null },
   },
   { timestamps: true }
 );
