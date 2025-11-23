@@ -7,6 +7,7 @@ const r = Router();
 
 const createSchema = z.object({
     prompt: z.string().trim().min(3, "prompt must be at least 3 characters"),
+    author: z.string().trim().min(1).optional(),
   });
   
   const getByIdQuery = z.object({
@@ -34,12 +35,15 @@ r.post("/create", async (req, res) => {
     const parsed = createSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
   
+    const { prompt, author } = parsed.data;
+    
     const doc = await Blog.create({
       prompt: parsed.data.prompt,
       status: "pending",
       aiResult: "",
       errorMessage: null,
       publishedAt: null,
+      author: author ?? null,
     });
   
     try {
