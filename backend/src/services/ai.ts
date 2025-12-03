@@ -1,25 +1,24 @@
-import { ChatOpenAI } from "@langchain/openai";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 
-const llm = new ChatOpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
-  temperature: Number(process.env.OPENAI_TEMPERATURE ?? 0.7),
+const llm = new ChatGoogleGenerativeAI({
+  apiKey: process.env.GOOGLE_AI_API_KEY,
+  model: process.env.GOOGLE_AI_MODEL ?? "gemini-flash-latest",
+  temperature: Number(process.env.GOOGLE_AI_TEMPERATURE ?? 0.7),
 });
 
 export async function generateBlog(prompt: string) {
   const res = await llm.invoke([
-    { role: "system", content: "You are a helpful blog writer that produces clear, accurate, well-structured markdown articles." },
-    {
-      role: "user",
-      content:
-        `Write a high-quality blog post in markdown.\n` +
-        `Requirements:\n` +
-        `- Start with an H1 title\n` +
-        `- Use subheadings, lists, and short paragraphs\n` +
-        `- Be factual; if unsure, say so (no hallucinations)\n` +
-        `- Aim for ~900–1200 words\n\n` +
-        `Topic and guidance:\n${prompt}`,
-    },
+    new SystemMessage("You are a helpful blog writer that produces clear, accurate, well-structured markdown articles."),
+    new HumanMessage(
+      `Write a high-quality blog post in markdown.\n` +
+      `Requirements:\n` +
+      `- Start with an H1 title\n` +
+      `- Use subheadings, lists, and short paragraphs\n` +
+      `- Be factual; if unsure, say so (no hallucinations)\n` +
+      `- Aim for ~900–1200 words\n\n` +
+      `Topic and guidance:\n${prompt}`
+    ),
   ]);
 
   return typeof res.content === "string" ? res.content : JSON.stringify(res.content);
@@ -90,21 +89,17 @@ export async function updateBlog(args: {
   const rightCtx = current.slice(end, Math.min(current.length, end + 300));
 
   const res = await llm.invoke([
-    {
-      role: "system",
-      content:
-        "You are a precise editor. Rewrite ONLY the excerpt provided. " +
-        "Keep tone and markdown style consistent with the surrounding context. " +
-        "Return ONLY the rewritten excerpt — no extra commentary.",
-    },
-    {
-      role: "user",
-      content:
-        `HOW to change it:\n${how}\n\n` +
-        `Left context (do NOT rewrite):\n<<<\n${leftCtx}\n>>>\n\n` +
-        `Excerpt to rewrite (rewrite ONLY this):\n---\n${excerpt}\n---\n\n` +
-        `Right context (do NOT rewrite):\n<<<\n${rightCtx}\n>>>`,
-    },
+    new SystemMessage(
+      "You are a precise editor. Rewrite ONLY the excerpt provided. " +
+      "Keep tone and markdown style consistent with the surrounding context. " +
+      "Return ONLY the rewritten excerpt — no extra commentary."
+    ),
+    new HumanMessage(
+      `HOW to change it:\n${how}\n\n` +
+      `Left context (do NOT rewrite):\n<<<\n${leftCtx}\n>>>\n\n` +
+      `Excerpt to rewrite (rewrite ONLY this):\n---\n${excerpt}\n---\n\n` +
+      `Right context (do NOT rewrite):\n<<<\n${rightCtx}\n>>>`
+    ),
   ]);
 
   const rewritten = normalize(res);

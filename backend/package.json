@@ -15,6 +15,7 @@
   "type": "module",
   "dependencies": {
     "@langchain/core": "^0.3.75",
+    "@langchain/google-genai": "^2.0.1",
     "@langchain/openai": "^0.6.11",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
