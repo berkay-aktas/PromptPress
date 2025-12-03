@@ -1,0 +1,357 @@
+"use client";
+
+import { useState, useRef, useEffect, useCallback } from "react";
+import axios from "axios";
+import { IBlogDetail } from "@/types/Blog";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import {
+  useNotifications,
+  NotificationContainer,
+} from "@/app/components/Notification";
+import { ConfirmDialog } from "@/app/components/ConfirmDialog";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+interface EditFormProps {
+  initialData: IBlogDetail;
+}
+
+export default function EditForm({ initialData }: EditFormProps) {
+  const [blog, setBlog] = useState(initialData);
+  const [selectedText, setSelectedText] = useState("");
+  const [howToChange, setHowToChange] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [publishLoading, setPublishLoading] = useState(false);
+  const [showPublishConfirm, setShowPublishConfirm] = useState(false);
+  const router = useRouter();
+  const { notifications, dismissNotification, showSuccess, showError } =
+    useNotifications();
+
+  // Handle text selection from markdown-rendered content
+  // When user selects text in the rendered markdown, we get the plain text.
+  // We try to find the corresponding markdown substring in the original content.
+  // The backend does fuzzy matching, so it will handle variations.
+  const handleTextSelection = useCallback(() => {
+    const selection = window.getSelection();
+    if (selection && selection.toString().length > 0) {
+      const selectedPlainText = selection.toString().trim();
+      const markdownContent = blog.aiResult || "";
+      
+      if (!markdownContent) {
+        setSelectedText(selectedPlainText);
+        return;
+      }
+      
+      // Try to find the selected text in the original markdown
+      // Use case-insensitive search and handle whitespace variations
+      const normalizedSelected = selectedPlainText.replace(/\s+/g, " ").trim();
+      const searchLower = normalizedSelected.toLowerCase();
+      
+      // Search in the original markdown (case-insensitive)
+      const markdownLower = markdownContent.toLowerCase();
+      const index = markdownLower.indexOf(searchLower);
+      
+      if (index !== -1) {
+        // Found a match - extract the substring with original markdown formatting
+        // Use a small window to capture markdown syntax around the text
+        const windowSize = 50;
+        const start = Math.max(0, index - windowSize);
+        const end = Math.min(markdownContent.length, index + normalizedSelected.length + windowSize);
+        const context = markdownContent.substring(start, end);
+        
+        // Find the exact position in the context
+        const contextLower = context.toLowerCase();
+        const contextIndex = contextLower.indexOf(searchLower);
+        
+        if (contextIndex !== -1) {
+          // Extract substring, trying to include markdown syntax
+          // Start from beginning of word/line if possible
+          let extractStart = contextIndex;
+          let extractEnd = contextIndex + normalizedSelected.length;
+          
+          // Try to include markdown syntax before (headings, bold, etc.)
+          for (let i = extractStart - 1; i >= 0 && i >= extractStart - 10; i--) {
+            if (context[i].match(/[#*`\n]/)) {
+              extractStart = i;
+              break;
+            }
+            if (context[i].match(/\s/)) {
+              continue;
+            }
+            break;
+          }
+          
+          // Try to include markdown syntax after
+          for (let i = extractEnd; i < context.length && i < extractEnd + 10; i++) {
+            if (context[i].match(/[#*`\n]/)) {
+              extractEnd = i;
+              break;
+            }
+            if (context[i].match(/\s/)) {
+              continue;
+            }
+            break;
+          }
+          
+          const markdownSubstring = context.substring(extractStart, extractEnd).trim();
+          setSelectedText(markdownSubstring || selectedPlainText);
+        } else {
+          setSelectedText(selectedPlainText);
+        }
+      } else {
+        // No exact match - use plain text (backend fuzzy matching will handle it)
+        setSelectedText(selectedPlainText);
+      }
+    } else {
+      setSelectedText("");
+    }
+  }, [blog.aiResult]);
+
+  // Targeted Edit
+  const handleTargetedEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!selectedText || !howToChange.trim()) {
+      showError("Please select text in the draft content and provide an instruction.");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await axios.patch(
+        `${API_BASE_URL}/blogs/update-blogContent`,
+        {
+          blog_id: blog._id,
+          what: selectedText,
+          how: howToChange.trim(),
+        }
+      );
+
+      const updatedBlog = response.data.blog as IBlogDetail;
+      setBlog(updatedBlog);
+      setSelectedText("");
+      setHowToChange("");
+      showSuccess("Content updated successfully!");
+    } catch (err: any) {
+      const errorMsg =
+        err.response?.data?.error ||
+        "Failed to update content. Please try again.";
+      const technicalDetails = err.response?.data
+        ? JSON.stringify(err.response.data, null, 2)
+        : err.message;
+      showError(errorMsg, technicalDetails);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Publish
+  const handlePublishClick = () => {
+    setShowPublishConfirm(true);
+  };
+
+  const handlePublishConfirm = async () => {
+    setShowPublishConfirm(false);
+    setPublishLoading(true);
+
+    try {
+      await axios.patch(`${API_BASE_URL}/blogs/update-blogStatus`, {
+        blog_id: blog._id,
+        status: "published",
+      });
+
+      showSuccess("Post published successfully! Redirecting...", undefined, 2000);
+      setTimeout(() => {
+        router.push("/profile");
+      }, 1500);
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.error || "Failed to publish post.";
+      const technicalDetails = err.response?.data
+        ? JSON.stringify(err.response.data, null, 2)
+        : err.message;
+      showError(errorMsg, technicalDetails);
+    } finally {
+      setPublishLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <NotificationContainer
+        notifications={notifications}
+        onDismiss={dismissNotification}
+      />
+      <ConfirmDialog
+        open={showPublishConfirm}
+        title="Publish Post"
+        message={`Publish "${blog.prompt}" to the public feed?`}
+        confirmText="Publish"
+        onConfirm={handlePublishConfirm}
+        onCancel={() => setShowPublishConfirm(false)}
+      />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+        {/* Left: Draft Content */}
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900 mb-1">
+                Draft Content
+              </h2>
+              <p className="text-sm text-gray-600">
+                Select text to edit it with AI assistance
+              </p>
+            </div>
+            <div className="p-6">
+              <div
+                className={`bg-gray-50 p-6 border border-gray-200 rounded-lg text-sm leading-relaxed transition-opacity duration-300 select-text markdown-content ${
+                  isLoading ? "opacity-50 pointer-events-none" : "opacity-100"
+                }`}
+                onMouseUp={handleTextSelection}
+              >
+                {blog.aiResult ? (
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      table: ({ children }) => (
+                        <div className="overflow-x-auto my-4">
+                          <table className="min-w-full border-collapse border border-gray-300">
+                            {children}
+                          </table>
+                        </div>
+                      ),
+                      thead: ({ children }) => (
+                        <thead className="bg-gray-50">{children}</thead>
+                      ),
+                      tbody: ({ children }) => (
+                        <tbody className="bg-white divide-y divide-gray-200">{children}</tbody>
+                      ),
+                      tr: ({ children }) => (
+                        <tr className="border-b border-gray-200">{children}</tr>
+                      ),
+                      th: ({ children }) => (
+                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-900 border border-gray-300">
+                          {children}
+                        </th>
+                      ),
+                      td: ({ children }) => (
+                        <td className="px-4 py-2 text-sm text-gray-700 border border-gray-300">
+                          {children}
+                        </td>
+                      ),
+                    }}
+                  >
+                    {blog.aiResult}
+                  </ReactMarkdown>
+                ) : (
+                  <p className="text-gray-500 italic">No content available.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Edit Panel */}
+        <aside className="space-y-6 lg:sticky lg:top-20 lg:self-start">
+          {/* Targeted Edit Form */}
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Targeted AI Edit
+            </h3>
+            <form onSubmit={handleTargetedEdit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Selected Text
+                </label>
+                <div className="p-3 border-2 border-dashed border-yellow-300 rounded-lg bg-yellow-50 min-h-[60px] max-h-32 overflow-y-auto">
+                  <p className="text-sm text-gray-800 break-words">
+                    {selectedText || (
+                      <span className="text-gray-500 italic">
+                        Highlight text in the draft to select it
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="how"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Edit Instruction
+                </label>
+                <textarea
+                  id="how"
+                  value={howToChange}
+                  onChange={(e) => setHowToChange(e.target.value)}
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all disabled:bg-gray-50 disabled:cursor-not-allowed"
+                  placeholder="E.g., Make this paragraph more concise and professional..."
+                  disabled={isLoading || !selectedText}
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading || !selectedText || !howToChange.trim()}
+                className={`w-full py-2.5 px-4 rounded-lg text-sm font-medium text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+                  isLoading || !selectedText || !howToChange.trim()
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-md"
+                }`}
+              >
+                {isLoading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+                    Processing...
+                  </span>
+                ) : (
+                  "Apply Edit"
+                )}
+              </button>
+            </form>
+          </div>
+
+          {/* Publish Section */}
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Publish
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Make this draft visible to everyone on the public feed.
+            </p>
+            <button
+              onClick={handlePublishClick}
+              disabled={publishLoading}
+              className={`w-full py-3 px-4 rounded-lg text-sm font-semibold text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${
+                publishLoading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-green-600 hover:bg-green-700 hover:shadow-md"
+              }`}
+            >
+              {publishLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+                  Publishing...
+                </span>
+              ) : (
+                "Publish to Feed"
+              )}
+            </button>
+            <Link
+              href="/profile"
+              className="mt-4 block text-center text-sm text-gray-600 hover:text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-2 py-1 transition-colors"
+            >
+              ← Back to Profile
+            </Link>
+          </div>
+        </aside>
+      </div>
+    </>
+  );
+}
