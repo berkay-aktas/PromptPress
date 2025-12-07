@@ -15,7 +15,8 @@ export interface BlogDoc {
     updatedAt: string;
 
     author?: string | null;
-    // authorId?: string | null; // Types.ObjectId yerine string kullanıldı
+    authorId?: string | null;
+    tags?: Array<{ _id: string; name: string; slug: string }>;
 }
 
 

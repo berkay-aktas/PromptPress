@@ -11,6 +11,7 @@ export interface BlogDoc extends Document {
 
   author?: string | null;
   authorId?: Types.ObjectId | null;
+  tags?: Types.ObjectId[];
 }
 
 const BlogSchema = new Schema<BlogDoc>(
@@ -29,6 +30,11 @@ const BlogSchema = new Schema<BlogDoc>(
 
     author: { type: String, default: null },
     authorId: { type: Schema.Types.ObjectId, ref: "User", default: null, index: true },
+    tags: {
+      type: [{ type: Schema.Types.ObjectId, ref: "Tag" }],
+      default: [],
+      index: true,
+    },
   },
   { timestamps: true }
 );

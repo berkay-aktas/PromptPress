@@ -10,6 +10,8 @@ import {
 } from "@/app/components/Notification";
 import { ConfirmDialog } from "@/app/components/ConfirmDialog";
 import { CommentModeration } from "@/app/components/CommentModeration";
+import { TagManagement } from "@/app/components/TagManagement";
+import { StatsDashboard } from "@/app/components/StatsDashboard";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -147,6 +149,11 @@ export default function AdminPage() {
           </p>
         </div>
 
+        {/* Statistics Dashboard */}
+        <div className="mb-12">
+          <StatsDashboard />
+        </div>
+
         {/* Loading State */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-16 sm:py-24">
@@ -238,6 +245,11 @@ export default function AdminPage() {
             </div>
           </div>
         )}
+
+        {/* Tag Management Section */}
+        <div className="mt-12">
+          <TagManagement />
+        </div>
 
         {/* Comment Moderation Section */}
         <div className="mt-12">

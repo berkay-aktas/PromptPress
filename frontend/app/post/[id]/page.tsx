@@ -153,18 +153,32 @@ export default function PostDetailPage() {
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 leading-tight">
             {getTitleFromMarkdown(post.aiResult || "") || post.prompt || "Untitled Post"}
           </h1>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm text-gray-600">
-            <span>
-              By <span className="font-medium">{post.author || "Anonymous"}</span>
-            </span>
-            <span>
-              Published{" "}
-              {new Date(post.publishedAt || post.createdAt).toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </span>
+          <div className="flex flex-col gap-3">
+            {post.tags && post.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {post.tags.map((tag) => (
+                  <span
+                    key={tag._id}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800"
+                  >
+                    {tag.name}
+                  </span>
+                ))}
+              </div>
+            )}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm text-gray-600">
+              <span>
+                By <span className="font-medium">{post.author || "Anonymous"}</span>
+              </span>
+              <span>
+                Published{" "}
+                {new Date(post.publishedAt || post.createdAt).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </span>
+            </div>
           </div>
         </header>
 

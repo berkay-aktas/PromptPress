@@ -5,6 +5,8 @@ import { connectMongo } from "./db/mongo.js";
 import blogRoutes from "./routes/blogs.js";
 import authRoutes from "./routes/auth.js";
 import commentRoutes from "./routes/comments.js";
+import tagRoutes from "./routes/tags.js";
+import statsRoutes from "./routes/stats.js";
 
 const app = express();
 app.use(cors());
@@ -14,6 +16,8 @@ app.get("/health", (req, res) => res.json({ ok: true }));
 app.use("/api/auth", authRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/comments", commentRoutes);
+app.use("/api/tags", tagRoutes);
+app.use("/api/stats", statsRoutes);
 
 const PORT = Number(process.env.PORT) || 5000;
 const MONGO_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/blogwebsiteai"

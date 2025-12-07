@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import axios from "axios";
 import { IBlogDetail } from "@/types/Blog";
+import { ITag } from "@/types/Tag";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
@@ -23,12 +24,30 @@ export default function EditForm({ initialData }: EditFormProps) {
   const [blog, setBlog] = useState(initialData);
   const [selectedText, setSelectedText] = useState("");
   const [howToChange, setHowToChange] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>(
+    initialData.tags?.map((t) => t._id) || []
+  );
+  const [availableTags, setAvailableTags] = useState<ITag[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [publishLoading, setPublishLoading] = useState(false);
+  const [tagsLoading, setTagsLoading] = useState(false);
   const [showPublishConfirm, setShowPublishConfirm] = useState(false);
   const router = useRouter();
   const { notifications, dismissNotification, showSuccess, showError } =
     useNotifications();
+
+  useEffect(() => {
+    fetchTags();
+  }, []);
+
+  async function fetchTags() {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/tags/get-all`);
+      setAvailableTags(response.data || []);
+    } catch (err: any) {
+      console.error("Failed to fetch tags:", err);
+    }
+  }
 
   // Handle text selection from markdown-rendered content
   // When user selects text in the rendered markdown, we get the plain text.
@@ -146,6 +165,30 @@ export default function EditForm({ initialData }: EditFormProps) {
       showError(errorMsg, technicalDetails);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Update Tags
+  const handleUpdateTags = async () => {
+    setTagsLoading(true);
+    try {
+      const response = await axios.patch(
+        `${API_BASE_URL}/blogs/update-tags`,
+        {
+          blog_id: blog._id,
+          tags: selectedTags,
+        }
+      );
+
+      setBlog(response.data.blog);
+      showSuccess("Tags updated successfully!");
+    } catch (err: any) {
+      const errorMsg =
+        err.response?.data?.error ||
+        "Failed to update tags. Please try again.";
+      showError(errorMsg);
+    } finally {
+      setTagsLoading(false);
     }
   };
 
@@ -315,6 +358,66 @@ export default function EditForm({ initialData }: EditFormProps) {
                 )}
               </button>
             </form>
+          </div>
+
+          {/* Tags Section */}
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Tags
+            </h3>
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-2 min-h-[60px] p-3 border border-gray-300 rounded-lg bg-gray-50">
+                {availableTags.length === 0 ? (
+                  <p className="text-sm text-gray-500 italic">
+                    No tags available. Create tags in the admin panel.
+                  </p>
+                ) : (
+                  availableTags.map((tag) => (
+                    <button
+                      key={tag._id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedTags((prev) =>
+                          prev.includes(tag._id)
+                            ? prev.filter((id) => id !== tag._id)
+                            : [...prev, tag._id]
+                        );
+                      }}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                        selectedTags.includes(tag._id)
+                          ? "bg-indigo-600 text-white shadow-sm"
+                          : "bg-white text-gray-700 border border-gray-300 hover:border-indigo-300 hover:bg-indigo-50"
+                      }`}
+                    >
+                      {tag.name}
+                    </button>
+                  ))
+                )}
+              </div>
+              {selectedTags.length > 0 && (
+                <p className="text-xs text-gray-500">
+                  {selectedTags.length} tag{selectedTags.length !== 1 ? "s" : ""} selected
+                </p>
+              )}
+              <button
+                onClick={handleUpdateTags}
+                disabled={tagsLoading}
+                className={`w-full py-2.5 px-4 rounded-lg text-sm font-medium text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+                  tagsLoading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-md"
+                }`}
+              >
+                {tagsLoading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+                    Updating...
+                  </span>
+                ) : (
+                  "Update Tags"
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Publish Section */}

@@ -94,14 +94,28 @@ const PostCard = ({ post }: { post: IBlogDetail }) => {
         <p className="text-gray-600 text-sm mb-3 leading-relaxed line-clamp-3">
           {excerpt || "No content available."}
         </p>
-        <div className="flex justify-between items-center pt-4 border-t border-gray-100 mt-4">
-          <span className="text-xs text-gray-500">
-            By {post.author || "Anonymous"}
-          </span>
-          <span className="text-sm text-indigo-600 font-medium group-hover:text-indigo-700 flex items-center gap-1">
-            Read Full
-            <span className="transition-transform group-hover:translate-x-1">→</span>
-          </span>
+        <div className="flex flex-col gap-3 pt-4 border-t border-gray-100 mt-4">
+          <div className="flex flex-wrap gap-2">
+            {post.tags && post.tags.length > 0 ? (
+              post.tags.map((tag) => (
+                <span
+                  key={tag._id}
+                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800"
+                >
+                  {tag.name}
+                </span>
+              ))
+            ) : null}
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-xs text-gray-500">
+              By {post.author || "Anonymous"}
+            </span>
+            <span className="text-sm text-indigo-600 font-medium group-hover:text-indigo-700 flex items-center gap-1">
+              Read Full
+              <span className="transition-transform group-hover:translate-x-1">→</span>
+            </span>
+          </div>
         </div>
       </div>
     </Link>

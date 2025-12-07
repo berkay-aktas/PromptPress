@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import Blog from "../models/Blog.js";
+import Tag from "../models/Tag.js";
 import { generateBlog, updateBlog } from "../services/ai.js";
 import { AuthRequest, optionalAuth } from "../middleware/auth.js";
 import { Types } from "mongoose";
@@ -10,6 +11,7 @@ const r = Router();
 const createSchema = z.object({
     prompt: z.string().trim().min(3, "prompt must be at least 3 characters"),
     author: z.string().trim().min(1).optional(),
+    tags: z.array(z.string()).optional(),
   });
   
   const getByIdQuery = z.object({
@@ -32,12 +34,24 @@ const createSchema = z.object({
     how: z.string().min(3, "please describe how it should change"),
   });
 
+  const updateTagsSchema = z.object({
+    blog_id: z.string().min(1),
+    tags: z.array(z.string()),
+  });
+
 
 r.post("/create", optionalAuth, async (req: AuthRequest, res) => {
     const parsed = createSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
   
-    const { prompt, author } = parsed.data;
+    const { prompt, author, tags } = parsed.data;
+    
+    // Validate and convert tag IDs
+    let tagIds: Types.ObjectId[] = [];
+    if (tags && tags.length > 0) {
+      const validTags = await Tag.find({ _id: { $in: tags } });
+      tagIds = validTags.map((tag) => tag._id);
+    }
     
     const doc = await Blog.create({
       prompt: parsed.data.prompt,
@@ -47,6 +61,7 @@ r.post("/create", optionalAuth, async (req: AuthRequest, res) => {
       publishedAt: null,
       author: author ?? (req.user ? undefined : null),
       authorId: req.user ? new Types.ObjectId(req.user.userId) : null,
+      tags: tagIds,
     });
   
     try {
@@ -72,7 +87,7 @@ r.post("/create", optionalAuth, async (req: AuthRequest, res) => {
 });
 
 r.get("/get-all", async (req, res) => {
-    const items = await Blog.find().sort({ createdAt: -1 }).lean();
+    const items = await Blog.find().populate("tags", "name slug").sort({ createdAt: -1 }).lean();
     res.json(items);
 });
 
@@ -80,14 +95,17 @@ r.get("/get-by-id", async (req, res) => {
     const parsed = getByIdQuery.safeParse({ blog_id: String(req.query.blog_id || "") });
     if (!parsed.success) return res.status(400).json({ error: "blog_id required" });
 
-    const blog = await Blog.findById(parsed.data.blog_id);
+    const blog = await Blog.findById(parsed.data.blog_id).populate("tags", "name slug").lean();
     if (!blog) return res.status(404).json({ error: "not found" });
 
     res.json(blog);
 });
 
 r.get("/get-allPublished", async (req, res) => {
-    const items = await Blog.find({ status: "published" }).sort({ publishedAt: -1, createdAt: -1 }).lean();
+    const items = await Blog.find({ status: "published" })
+      .populate("tags", "name slug")
+      .sort({ publishedAt: -1, createdAt: -1 })
+      .lean();
     res.json(items);
 });
 
@@ -158,6 +176,28 @@ r.patch("/update-blogContent", async (req, res) => {
 
     return res.status(500).json({ error: blog.errorMessage });
   }
+});
+
+// Update blog tags
+r.patch("/update-tags", async (req, res) => {
+  const parsed = updateTagsSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+
+  const blog = await Blog.findById(parsed.data.blog_id);
+  if (!blog) return res.status(404).json({ error: "not found" });
+
+  // Validate and convert tag IDs
+  let tagIds: Types.ObjectId[] = [];
+  if (parsed.data.tags && parsed.data.tags.length > 0) {
+    const validTags = await Tag.find({ _id: { $in: parsed.data.tags } });
+    tagIds = validTags.map((tag) => tag._id);
+  }
+
+  blog.tags = tagIds;
+  await blog.save();
+
+  const populated = await Blog.findById(blog._id).populate("tags", "name slug").lean();
+  res.json({ ok: true, blog: populated });
 });
 
 
