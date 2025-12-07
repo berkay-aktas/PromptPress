@@ -9,6 +9,8 @@ import {
   NotificationContainer,
 } from "@/app/components/Notification";
 import { ConfirmDialog } from "@/app/components/ConfirmDialog";
+import { ProtectedRoute } from "@/app/components/ProtectedRoute";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -17,6 +19,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const { notifications, dismissNotification, showSuccess, showError } =
     useNotifications();
+  const { token, user } = useAuth();
 
   // Confirmation dialog state
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -28,15 +31,27 @@ export default function ProfilePage() {
   } | null>(null);
 
   useEffect(() => {
-    fetchDrafts();
-  }, []);
+    if (user || !token) {
+      fetchDrafts();
+    }
+  }, [user, token]);
 
-  // GET /api/blogs/get-all
+  // GET /api/blogs/get-all (filtered by user)
   async function fetchDrafts() {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE_URL}/blogs/get-all`);
-      setDrafts(res.data || []);
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const res = await axios.get(`${API_BASE_URL}/blogs/get-all`, { headers });
+      
+      // Filter to show only current user's drafts if authenticated
+      let filteredDrafts = res.data || [];
+      if (user) {
+        filteredDrafts = filteredDrafts.filter(
+          (draft: IBlogDetail) => draft.authorId === user._id || draft.author === user.name
+        );
+      }
+      
+      setDrafts(filteredDrafts);
     } catch (err: any) {
       console.error("Draft fetching failed:", err);
       showError(
@@ -106,7 +121,7 @@ export default function ProfilePage() {
   const nonPublishedDrafts = drafts.filter((d) => d.status !== "published");
 
   return (
-    <>
+    <ProtectedRoute>
       <NotificationContainer
         notifications={notifications}
         onDismiss={dismissNotification}

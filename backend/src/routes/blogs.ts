@@ -1,7 +1,9 @@
 import { Router } from "express";
 import { z } from "zod";
 import Blog from "../models/Blog.js";
-import { generateBlog, updateBlog } from "../services/ai.js"
+import { generateBlog, updateBlog } from "../services/ai.js";
+import { AuthRequest, optionalAuth } from "../middleware/auth.js";
+import { Types } from "mongoose";
 
 const r = Router();
 
@@ -31,7 +33,7 @@ const createSchema = z.object({
   });
 
 
-r.post("/create", async (req, res) => {
+r.post("/create", optionalAuth, async (req: AuthRequest, res) => {
     const parsed = createSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
   
@@ -43,7 +45,8 @@ r.post("/create", async (req, res) => {
       aiResult: "",
       errorMessage: null,
       publishedAt: null,
-      author: author ?? null,
+      author: author ?? (req.user ? undefined : null),
+      authorId: req.user ? new Types.ObjectId(req.user.userId) : null,
     });
   
     try {

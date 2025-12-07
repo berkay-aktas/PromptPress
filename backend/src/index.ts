@@ -3,12 +3,14 @@ import express from "express";
 import cors from "cors";
 import { connectMongo } from "./db/mongo.js";
 import blogRoutes from "./routes/blogs.js";
+import authRoutes from "./routes/auth.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 app.get("/health", (req, res) => res.json({ ok: true }));
+app.use("/api/auth", authRoutes);
 app.use("/api/blogs", blogRoutes);
 
 const PORT = Number(process.env.PORT) || 5000;

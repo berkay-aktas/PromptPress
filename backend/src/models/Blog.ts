@@ -1,4 +1,4 @@
-import { Schema, model, type Document } from "mongoose";
+import { Schema, model, type Document, Types } from "mongoose";
 
 export interface BlogDoc extends Document {
   prompt: string;
@@ -10,7 +10,7 @@ export interface BlogDoc extends Document {
   updatedAt: Date;
 
   author?: string | null;
-  //authorId?: Types.ObjectId | null;
+  authorId?: Types.ObjectId | null;
 }
 
 const BlogSchema = new Schema<BlogDoc>(
@@ -28,7 +28,7 @@ const BlogSchema = new Schema<BlogDoc>(
     publishedAt: { type: Date, default: null },
 
     author: { type: String, default: null },
-    //authorId: { type: Schema.Types.ObjectId, ref: "User", default: null },
+    authorId: { type: Schema.Types.ObjectId, ref: "User", default: null, index: true },
   },
   { timestamps: true }
 );

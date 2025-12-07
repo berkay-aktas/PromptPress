@@ -164,7 +164,7 @@ export default function EditForm({ initialData }: EditFormProps) {
         status: "published",
       });
 
-      showSuccess("Post published successfully! Redirecting...", undefined, 2000);
+      showSuccess("Post published successfully! Redirecting...", 2000);
       setTimeout(() => {
         router.push("/profile");
       }, 1500);
