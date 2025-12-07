@@ -9,6 +9,7 @@ import {
   NotificationContainer,
 } from "@/app/components/Notification";
 import { ConfirmDialog } from "@/app/components/ConfirmDialog";
+import { CommentModeration } from "@/app/components/CommentModeration";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -237,6 +238,11 @@ export default function AdminPage() {
             </div>
           </div>
         )}
+
+        {/* Comment Moderation Section */}
+        <div className="mt-12">
+          <CommentModeration />
+        </div>
       </div>
     </>
   );

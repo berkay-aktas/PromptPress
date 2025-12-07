@@ -3,9 +3,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { IBlogDetail } from "@/types/Blog";
+import { IComment } from "@/types/Comment";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { MarkdownContent } from "@/app/components/MarkdownContent";
+import { CommentForm } from "@/app/components/CommentForm";
+import { CommentList } from "@/app/components/CommentList";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -26,7 +29,9 @@ export default function PostDetailPage() {
   const params = useParams();
   const postId = params.id as string;
   const [post, setPost] = useState<IBlogDetail | null>(null);
+  const [comments, setComments] = useState<IComment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [commentsLoading, setCommentsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -65,6 +70,43 @@ export default function PostDetailPage() {
 
     fetchPost();
   }, [postId]);
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      if (!postId || !post) return;
+
+      setCommentsLoading(true);
+      try {
+        const response = await axios.get(
+          `${API_BASE_URL}/comments/get-by-blog?blog_id=${postId}`
+        );
+        setComments(response.data as IComment[]);
+      } catch (err: any) {
+        console.error("Failed to fetch comments:", err);
+      } finally {
+        setCommentsLoading(false);
+      }
+    };
+
+    if (post) {
+      fetchComments();
+    }
+  }, [postId, post]);
+
+  const handleCommentAdded = () => {
+    // Refetch comments after adding a new one
+    const fetchComments = async () => {
+      try {
+        const response = await axios.get(
+          `${API_BASE_URL}/comments/get-by-blog?blog_id=${postId}`
+        );
+        setComments(response.data as IComment[]);
+      } catch (err: any) {
+        console.error("Failed to fetch comments:", err);
+      }
+    };
+    fetchComments();
+  };
 
   if (loading) {
     return (
@@ -133,6 +175,20 @@ export default function PostDetailPage() {
           />
         </div>
       </article>
+
+      {/* Comments Section */}
+      <div className="mt-8 space-y-6">
+        <CommentForm blogId={postId} onCommentAdded={handleCommentAdded} />
+
+        {commentsLoading ? (
+          <div className="flex flex-col items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mb-2"></div>
+            <p className="text-gray-600 text-sm">Loading comments...</p>
+          </div>
+        ) : (
+          <CommentList comments={comments} onCommentDeleted={handleCommentAdded} />
+        )}
+      </div>
     </div>
   );
 }
