@@ -68,6 +68,11 @@ export default async function EditPage({ params }: EditPageProps) {
       );
     }
 
+    // Allow editing published posts (they become drafts when edited)
+    if (draft.status === "published") {
+      // Show a note that editing will unpublish
+    }
+
     return (
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">

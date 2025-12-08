@@ -2,6 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import Blog from "../models/Blog.js";
 import Tag from "../models/Tag.js";
+import Revision from "../models/Revision.js";
 import { generateBlog, updateBlog } from "../services/ai.js";
 import { AuthRequest, optionalAuth } from "../middleware/auth.js";
 import { Types } from "mongoose";
@@ -135,12 +136,21 @@ r.patch("/update-blogStatus", async (req, res) => {
     res.json({ ok: true, blog });
 });
 
-r.patch("/update-blogContent", async (req, res) => {
+r.patch("/update-blogContent", optionalAuth, async (req: AuthRequest, res) => {
   const parsed = updateAIContentSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
 
   const blog = await Blog.findById(parsed.data.blog_id);
   if (!blog) return res.status(404).json({ error: "not found" });
+
+  // Check authorization: user must own the blog or be admin
+  if (req.user) {
+    const isOwner = blog.authorId && String(blog.authorId) === req.user.userId;
+    const isAdmin = req.user.role === "admin";
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ error: "you can only edit your own posts" });
+    }
+  }
 
   const previousStatus = blog.status;
   if (blog.status === "published") {
@@ -161,6 +171,14 @@ r.patch("/update-blogContent", async (req, res) => {
     blog.errorMessage = null;
     await blog.save();
 
+    // Create revision record
+    await Revision.create({
+      blog: blog._id,
+      user: req.user ? new Types.ObjectId(req.user.userId) : null,
+      what: parsed.data.what,
+      how: parsed.data.how,
+    });
+
     const populated = await Blog.findById(blog._id).populate("tags", "name slug").lean();
     return res.json({ ok: true, previousStatus, blog: populated });
   } catch (e: any) {
@@ -180,12 +198,21 @@ r.patch("/update-blogContent", async (req, res) => {
 });
 
 // Update blog tags
-r.patch("/update-tags", async (req, res) => {
+r.patch("/update-tags", optionalAuth, async (req: AuthRequest, res) => {
   const parsed = updateTagsSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
 
   const blog = await Blog.findById(parsed.data.blog_id);
   if (!blog) return res.status(404).json({ error: "not found" });
+
+  // Check authorization: user must own the blog or be admin
+  if (req.user) {
+    const isOwner = blog.authorId && String(blog.authorId) === req.user.userId;
+    const isAdmin = req.user.role === "admin";
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ error: "you can only edit your own posts" });
+    }
+  }
 
   // Validate and convert tag IDs
   let tagIds: Types.ObjectId[] = [];

@@ -13,6 +13,7 @@ import {
   NotificationContainer,
 } from "@/app/components/Notification";
 import { ConfirmDialog } from "@/app/components/ConfirmDialog";
+import { RevisionHistory } from "@/app/components/RevisionHistory";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -35,6 +36,8 @@ export default function EditForm({ initialData }: EditFormProps) {
   const router = useRouter();
   const { notifications, dismissNotification, showSuccess, showError } =
     useNotifications();
+
+  const isPublished = blog.status === "published";
 
   useEffect(() => {
     fetchTags();
@@ -154,7 +157,12 @@ export default function EditForm({ initialData }: EditFormProps) {
       setBlog(updatedBlog);
       setSelectedText("");
       setHowToChange("");
-      showSuccess("Content updated successfully!");
+      
+      if (isPublished) {
+        showSuccess("Content updated! The post has been unpublished and is now a draft. Republish when ready.");
+      } else {
+        showSuccess("Content updated successfully!");
+      }
     } catch (err: any) {
       const errorMsg =
         err.response?.data?.error ||
@@ -239,10 +247,24 @@ export default function EditForm({ initialData }: EditFormProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Left: Draft Content */}
         <div className="lg:col-span-2">
+          {isPublished && (
+            <div className="mb-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <span className="text-yellow-400 text-xl">⚠️</span>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-yellow-800">
+                    <strong>Note:</strong> This post is currently published. Editing it will unpublish it and create a draft. You'll need to republish after making changes.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
             <div className="p-6 border-b border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900 mb-1">
-                Draft Content
+                {isPublished ? "Post Content" : "Draft Content"}
               </h2>
               <p className="text-sm text-gray-600">
                 Select text to edit it with AI assistance
@@ -298,7 +320,7 @@ export default function EditForm({ initialData }: EditFormProps) {
         </div>
 
         {/* Right: Edit Panel */}
-        <aside className="space-y-6 lg:sticky lg:top-20 lg:self-start">
+        <aside className="space-y-6 lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-2">
           {/* Targeted Edit Form */}
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -420,32 +442,46 @@ export default function EditForm({ initialData }: EditFormProps) {
             </div>
           </div>
 
-          {/* Publish Section */}
+          {/* Revision History Section */}
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+            <RevisionHistory blogId={blog._id} />
+          </div>
+
+          {/* Publish/Republish Section */}
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Publish
+              {isPublished ? "Republish" : "Publish"}
             </h3>
             <p className="text-sm text-gray-600 mb-4">
-              Make this draft visible to everyone on the public feed.
+              {isPublished
+                ? "This post is currently published. After editing, republish to make changes visible."
+                : "Make this draft visible to everyone on the public feed."}
             </p>
-            <button
-              onClick={handlePublishClick}
-              disabled={publishLoading}
-              className={`w-full py-3 px-4 rounded-lg text-sm font-semibold text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${
-                publishLoading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-green-600 hover:bg-green-700 hover:shadow-md"
-              }`}
-            >
-              {publishLoading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
-                  Publishing...
-                </span>
-              ) : (
-                "Publish to Feed"
-              )}
-            </button>
+            {!isPublished && (
+              <button
+                onClick={handlePublishClick}
+                disabled={publishLoading}
+                className={`w-full py-3 px-4 rounded-lg text-sm font-semibold text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${
+                  publishLoading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-green-600 hover:bg-green-700 hover:shadow-md"
+                }`}
+              >
+                {publishLoading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+                    Publishing...
+                  </span>
+                ) : (
+                  "Publish to Feed"
+                )}
+              </button>
+            )}
+            {isPublished && (
+              <p className="text-xs text-gray-500 italic">
+                Edit the content above, then republish when ready.
+              </p>
+            )}
             <Link
               href="/profile"
               className="mt-4 block text-center text-sm text-gray-600 hover:text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-2 py-1 transition-colors"
