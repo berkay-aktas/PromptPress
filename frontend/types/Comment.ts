@@ -8,7 +8,7 @@ export interface CommentUser {
 
 export interface CommentDoc {
   _id: string;
-  blog: string;
+  blog: string | { _id: string; prompt?: string };
   user: CommentUser | null;
   text: string;
   status: CommentStatus;

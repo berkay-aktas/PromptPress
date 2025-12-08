@@ -229,7 +229,7 @@ export function CommentModeration() {
                       {comment.text}
                     </p>
                     <Link
-                      href={`/post/${comment.blog}`}
+                      href={`/post/${typeof comment.blog === "string" ? comment.blog : comment.blog._id}`}
                       className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
                     >
                       View Post →

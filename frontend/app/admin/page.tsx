@@ -12,6 +12,7 @@ import { ConfirmDialog } from "@/app/components/ConfirmDialog";
 import { CommentModeration } from "@/app/components/CommentModeration";
 import { TagManagement } from "@/app/components/TagManagement";
 import { StatsDashboard } from "@/app/components/StatsDashboard";
+import { ProtectedRoute } from "@/app/components/ProtectedRoute";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -122,7 +123,7 @@ export default function AdminPage() {
   }
 
   return (
-    <>
+    <ProtectedRoute requireRole="admin">
       <NotificationContainer
         notifications={notifications}
         onDismiss={dismissNotification}
@@ -256,7 +257,7 @@ export default function AdminPage() {
           <CommentModeration />
         </div>
       </div>
-    </>
+    </ProtectedRoute>
   );
 }
 

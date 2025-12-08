@@ -45,7 +45,7 @@ export default function RegisterPage() {
 
     try {
       await register(email.trim(), name.trim(), password);
-      showSuccess("Registration successful! Redirecting...", undefined, 2000);
+      showSuccess("Registration successful! Redirecting...",  2000); 
       setTimeout(() => {
         router.push("/profile");
       }, 1500);
