@@ -161,7 +161,8 @@ r.patch("/update-blogContent", async (req, res) => {
     blog.errorMessage = null;
     await blog.save();
 
-    return res.json({ ok: true, previousStatus, blog });
+    const populated = await Blog.findById(blog._id).populate("tags", "name slug").lean();
+    return res.json({ ok: true, previousStatus, blog: populated });
   } catch (e: any) {
     if (e?.code === "TARGET_NOT_FOUND" || String(e?.message).includes("TARGET_NOT_FOUND")) {
       return res.status(422).json({

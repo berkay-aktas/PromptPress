@@ -31,8 +31,10 @@ export default function ProfilePage() {
   } | null>(null);
 
   useEffect(() => {
-    if (user || !token) {
+    if (user && token) {
       fetchDrafts();
+    } else if (!token) {
+      setLoading(false);
     }
   }, [user, token]);
 
