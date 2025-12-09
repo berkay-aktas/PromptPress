@@ -9,6 +9,7 @@ import { useParams } from "next/navigation";
 import { MarkdownContent } from "@/app/components/MarkdownContent";
 import { CommentForm } from "@/app/components/CommentForm";
 import { CommentList } from "@/app/components/CommentList";
+import { PostDetailSkeleton } from "@/app/components/LoadingSkeleton";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -109,12 +110,7 @@ export default function PostDetailPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 sm:py-24">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
-        <p className="text-gray-600 text-lg">Loading post...</p>
-      </div>
-    );
+    return <PostDetailSkeleton />;
   }
 
   if (error || !post) {
@@ -139,27 +135,55 @@ export default function PostDetailPage() {
     );
   }
 
+  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+  const shareTitle = getTitleFromMarkdown(post.aiResult || "") || post.prompt || "Untitled Post";
+
+  const handleShare = (platform: string) => {
+    const url = encodeURIComponent(shareUrl);
+    const title = encodeURIComponent(shareTitle);
+    
+    let shareLink = "";
+    switch (platform) {
+      case "twitter":
+        shareLink = `https://twitter.com/intent/tweet?url=${url}&text=${title}`;
+        break;
+      case "facebook":
+        shareLink = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+        break;
+      case "linkedin":
+        shareLink = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+        break;
+      case "copy":
+        navigator.clipboard.writeText(shareUrl);
+        return;
+    }
+    
+    if (shareLink) {
+      window.open(shareLink, "_blank", "width=600,height=400");
+    }
+  };
+
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6">
       <Link
         href="/feed"
-        className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 font-medium mb-6 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-2 py-1 transition-colors"
+        className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 font-medium mb-8 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1 transition-colors"
       >
         ← Back to Feed
       </Link>
 
-      <article className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-        <header className="px-6 sm:px-8 py-6 sm:py-8 border-b border-gray-200">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 leading-tight">
+      <article className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <header className="px-6 sm:px-8 py-8 sm:py-10 border-b border-gray-100">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-5 leading-tight">
             {getTitleFromMarkdown(post.aiResult || "") || post.prompt || "Untitled Post"}
           </h1>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             {post.tags && post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {post.tags.map((tag) => (
                   <span
                     key={tag._id}
-                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800"
+                    className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700"
                   >
                     {tag.name}
                   </span>
@@ -168,7 +192,7 @@ export default function PostDetailPage() {
             )}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm text-gray-600">
               <span>
-                By <span className="font-medium">{post.author || "Anonymous"}</span>
+                By <Link href={`/author/${post.authorId || post.author}`} className="font-medium text-indigo-600 hover:text-indigo-700 transition-colors">{post.author || "Anonymous"}</Link>
               </span>
               <span>
                 Published{" "}
@@ -179,10 +203,42 @@ export default function PostDetailPage() {
                 })}
               </span>
             </div>
+            {/* Share Buttons */}
+            <div className="flex items-center gap-2 pt-4 border-t border-gray-100">
+              <span className="text-xs font-medium text-gray-500">Share:</span>
+              <button
+                onClick={() => handleShare("twitter")}
+                className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors border border-gray-200"
+                title="Share on Twitter"
+              >
+                Twitter
+              </button>
+              <button
+                onClick={() => handleShare("facebook")}
+                className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors border border-gray-200"
+                title="Share on Facebook"
+              >
+                Facebook
+              </button>
+              <button
+                onClick={() => handleShare("linkedin")}
+                className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors border border-gray-200"
+                title="Share on LinkedIn"
+              >
+                LinkedIn
+              </button>
+              <button
+                onClick={() => handleShare("copy")}
+                className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors border border-gray-200"
+                title="Copy link"
+              >
+                Copy Link
+              </button>
+            </div>
           </div>
         </header>
 
-        <div className="px-6 sm:px-8 py-6 sm:py-8">
+        <div className="px-6 sm:px-8 py-8 sm:py-10">
           <MarkdownContent
             markdown={(post.aiResult || "").replace(/^#\s+.+$/m, "").trim()}
             variant="full"

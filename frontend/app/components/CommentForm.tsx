@@ -69,8 +69,8 @@ export function CommentForm({ blogId, onCommentAdded }: CommentFormProps) {
         notifications={notifications}
         onDismiss={dismissNotification}
       />
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+        <h3 className="text-base font-semibold text-gray-900 mb-4">
           Add a Comment
         </h3>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -79,7 +79,7 @@ export function CommentForm({ blogId, onCommentAdded }: CommentFormProps) {
               value={text}
               onChange={(e) => setText(e.target.value)}
               rows={4}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-150 text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed"
               placeholder={
                 isAuthenticated
                   ? "Share your thoughts..."
@@ -105,12 +105,12 @@ export function CommentForm({ blogId, onCommentAdded }: CommentFormProps) {
             <button
               type="submit"
               disabled={isLoading || !text.trim()}
-              className={`ml-auto px-6 py-2.5 border border-transparent text-sm font-medium rounded-lg text-white shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+              className={`ml-auto px-5 py-2.5 border border-transparent text-sm font-medium rounded-lg text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500 ${
                 isLoading || !text.trim()
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-md"
+                  : "bg-indigo-600 hover:bg-indigo-700"
               }`}
-            >
+              >
               {isLoading ? (
                 <span className="flex items-center gap-2">
                   <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>

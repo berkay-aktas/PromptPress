@@ -164,11 +164,11 @@ export function TagManagement() {
         />
       )}
 
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-gray-200">
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-gray-100">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-1">
+              <h2 className="text-lg font-semibold text-gray-900 mb-1">
                 Tag Management
               </h2>
               <p className="text-sm text-gray-600">
@@ -179,24 +179,24 @@ export function TagManagement() {
         </div>
 
         {/* Create Tag Form */}
-        <div className="p-6 border-b border-gray-200 bg-gray-50">
+        <div className="p-6 border-b border-gray-100 bg-gray-50">
           <form onSubmit={handleCreate} className="flex gap-2">
             <input
               type="text"
               value={newTagName}
               onChange={(e) => setNewTagName(e.target.value)}
               placeholder="Enter tag name..."
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-gray-900 placeholder-gray-400"
+              className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm text-gray-900 placeholder-gray-400"
               maxLength={50}
               disabled={isCreating}
             />
             <button
               type="submit"
               disabled={isCreating || !newTagName.trim()}
-              className={`px-6 py-2 rounded-lg font-medium text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+              className={`px-5 py-2 rounded-lg text-sm font-medium text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500 ${
                 isCreating || !newTagName.trim()
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-md"
+                  : "bg-indigo-600 hover:bg-indigo-700"
               }`}
             >
               {isCreating ? "Creating..." : "Create Tag"}
@@ -216,7 +216,7 @@ export function TagManagement() {
             <p className="text-gray-600 text-sm">No tags yet. Create your first tag above.</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-gray-100">
             {tags.map((tag) => (
               <div
                 key={tag._id}
@@ -228,19 +228,19 @@ export function TagManagement() {
                       type="text"
                       value={editTagName}
                       onChange={(e) => setEditTagName(e.target.value)}
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-gray-900"
+                      className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm text-gray-900"
                       maxLength={50}
                       autoFocus
                     />
                     <button
                       onClick={() => handleUpdate(tag._id)}
-                      className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+                      className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-green-500 transition-colors"
                     >
                       Save
                     </button>
                     <button
                       onClick={handleCancelEdit}
-                      className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+                      className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-500 transition-colors"
                     >
                       Cancel
                     </button>
@@ -248,8 +248,8 @@ export function TagManagement() {
                 ) : (
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700">
                           {tag.name}
                         </span>
                         <span className="text-xs text-gray-500">
@@ -267,13 +267,13 @@ export function TagManagement() {
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <button
                         onClick={() => handleStartEdit(tag)}
-                        className="px-3 py-1.5 text-xs font-medium text-indigo-700 bg-indigo-50 rounded-md hover:bg-indigo-100 transition-colors"
+                        className="px-3 py-1.5 text-xs font-medium text-indigo-700 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(tag)}
-                        className="px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 rounded-md hover:bg-red-100 transition-colors"
+                        className="px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
                       >
                         Delete
                       </button>

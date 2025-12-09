@@ -139,13 +139,13 @@ export default function AdminPage() {
         />
       )}
 
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+        <div className="mb-10">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
             Admin Management
           </h1>
-          <p className="text-gray-600 text-base sm:text-lg">
+          <p className="text-gray-600 text-base">
             Manage all posts and drafts in the system
           </p>
         </div>
@@ -157,68 +157,66 @@ export default function AdminPage() {
 
         {/* Loading State */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-16 sm:py-24">
+          <div className="flex flex-col items-center justify-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
-            <p className="text-gray-600 text-lg">Loading posts...</p>
+            <p className="text-gray-600">Loading posts...</p>
           </div>
         ) : error ? (
           /* Error State */
-          <div className="flex flex-col items-center justify-center py-16 sm:py-24 bg-white rounded-lg border-2 border-red-200">
-            <div className="text-5xl mb-4">⚠️</div>
+          <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-gray-200 p-8">
             <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">
               Unable to Load Posts
             </h2>
-            <p className="text-gray-600 text-center mb-6 max-w-md">{error}</p>
+            <p className="text-gray-600 text-center mb-6 max-w-md text-sm">{error}</p>
             <button
               onClick={fetchAllPosts}
-              className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+              className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition-colors"
             >
               Try Again
             </button>
           </div>
         ) : posts.length === 0 ? (
           /* Empty State */
-          <div className="flex flex-col items-center justify-center py-16 sm:py-24 bg-white rounded-lg border-2 border-dashed border-gray-300">
-            <div className="text-6xl mb-4">📋</div>
+          <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-gray-200 p-8">
             <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">
               No posts yet
             </h2>
-            <p className="text-gray-600 text-center mb-6 max-w-md">
+            <p className="text-gray-600 text-center mb-6 max-w-md text-sm">
               There are no posts or drafts in the system. Create your first draft to get started.
             </p>
             <Link
               href="/create"
-              className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors shadow-sm"
+              className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition-colors"
             >
               Create First Draft
             </Link>
           </div>
         ) : (
           /* Posts Table/List */
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
             {/* Desktop Table View */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-gray-50 border-b border-gray-100">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                       Title
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                       Created Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                       Author
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-gray-100">
                   {posts.map((post) => (
                     <PostTableRow
                       key={post._id}
@@ -233,7 +231,7 @@ export default function AdminPage() {
             </div>
 
             {/* Mobile Card View */}
-            <div className="md:hidden divide-y divide-gray-200">
+            <div className="md:hidden divide-y divide-gray-100">
               {posts.map((post) => (
                 <PostCardRow
                   key={post._id}

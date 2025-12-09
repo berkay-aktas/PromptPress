@@ -248,10 +248,10 @@ export default function EditForm({ initialData }: EditFormProps) {
         {/* Left: Draft Content */}
         <div className="lg:col-span-2">
           {isPublished && (
-            <div className="mb-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+            <div className="mb-6 bg-yellow-50 border border-yellow-200 p-4 rounded-xl">
               <div className="flex">
                 <div className="flex-shrink-0">
-                  <span className="text-yellow-400 text-xl">⚠️</span>
+                  <span className="text-yellow-600 text-lg">⚠️</span>
                 </div>
                 <div className="ml-3">
                   <p className="text-sm text-yellow-800">
@@ -261,9 +261,9 @@ export default function EditForm({ initialData }: EditFormProps) {
               </div>
             </div>
           )}
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900 mb-1">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+            <div className="p-6 border-b border-gray-100">
+              <h2 className="text-lg font-semibold text-gray-900 mb-1">
                 {isPublished ? "Post Content" : "Draft Content"}
               </h2>
               <p className="text-sm text-gray-600">
@@ -272,7 +272,7 @@ export default function EditForm({ initialData }: EditFormProps) {
             </div>
             <div className="p-6">
               <div
-                className={`bg-gray-50 p-6 border border-gray-200 rounded-lg text-sm leading-relaxed transition-opacity duration-300 select-text markdown-content ${
+                className={`bg-gray-50 p-6 border border-gray-200 rounded-xl text-sm leading-relaxed transition-opacity duration-300 select-text markdown-content ${
                   isLoading ? "opacity-50 pointer-events-none" : "opacity-100"
                 }`}
                 onMouseUp={handleTextSelection}
@@ -322,16 +322,16 @@ export default function EditForm({ initialData }: EditFormProps) {
         {/* Right: Edit Panel */}
         <aside className="space-y-6 lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-2">
           {/* Targeted Edit Form */}
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            <h3 className="text-base font-semibold text-gray-900 mb-4">
               Targeted AI Edit
             </h3>
             <form onSubmit={handleTargetedEdit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-600 mb-1.5">
                   Selected Text
                 </label>
-                <div className="p-3 border-2 border-dashed border-yellow-300 rounded-lg bg-yellow-50 min-h-[60px] max-h-32 overflow-y-auto">
+                <div className="p-3 border border-dashed border-yellow-300 rounded-lg bg-yellow-50 min-h-[60px] max-h-32 overflow-y-auto">
                   <p className="text-sm text-gray-800 break-words">
                     {selectedText || (
                       <span className="text-gray-500 italic">
@@ -345,7 +345,7 @@ export default function EditForm({ initialData }: EditFormProps) {
               <div>
                 <label
                   htmlFor="how"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-xs font-medium text-gray-600 mb-1.5"
                 >
                   Edit Instruction
                 </label>
@@ -354,7 +354,7 @@ export default function EditForm({ initialData }: EditFormProps) {
                   value={howToChange}
                   onChange={(e) => setHowToChange(e.target.value)}
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all disabled:bg-gray-50 disabled:cursor-not-allowed"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all disabled:bg-gray-50 disabled:cursor-not-allowed"
                   placeholder="E.g., Make this paragraph more concise and professional..."
                   disabled={isLoading || !selectedText}
                   required
@@ -364,10 +364,10 @@ export default function EditForm({ initialData }: EditFormProps) {
               <button
                 type="submit"
                 disabled={isLoading || !selectedText || !howToChange.trim()}
-                className={`w-full py-2.5 px-4 rounded-lg text-sm font-medium text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+                className={`w-full py-2.5 px-4 rounded-lg text-sm font-medium text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500 ${
                   isLoading || !selectedText || !howToChange.trim()
                     ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-md"
+                    : "bg-indigo-600 hover:bg-indigo-700"
                 }`}
               >
                 {isLoading ? (
@@ -383,12 +383,12 @@ export default function EditForm({ initialData }: EditFormProps) {
           </div>
 
           {/* Tags Section */}
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            <h3 className="text-base font-semibold text-gray-900 mb-4">
               Tags
             </h3>
             <div className="space-y-4">
-              <div className="flex flex-wrap gap-2 min-h-[60px] p-3 border border-gray-300 rounded-lg bg-gray-50">
+              <div className="flex flex-wrap gap-2 min-h-[60px] p-3 border border-gray-200 rounded-lg bg-gray-50">
                 {availableTags.length === 0 ? (
                   <p className="text-sm text-gray-500 italic">
                     No tags available. Create tags in the admin panel.
@@ -405,10 +405,10 @@ export default function EditForm({ initialData }: EditFormProps) {
                             : [...prev, tag._id]
                         );
                       }}
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                         selectedTags.includes(tag._id)
-                          ? "bg-indigo-600 text-white shadow-sm"
-                          : "bg-white text-gray-700 border border-gray-300 hover:border-indigo-300 hover:bg-indigo-50"
+                          ? "bg-indigo-600 text-white"
+                          : "bg-white text-gray-700 border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50"
                       }`}
                     >
                       {tag.name}
@@ -424,10 +424,10 @@ export default function EditForm({ initialData }: EditFormProps) {
               <button
                 onClick={handleUpdateTags}
                 disabled={tagsLoading}
-                className={`w-full py-2.5 px-4 rounded-lg text-sm font-medium text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+                className={`w-full py-2.5 px-4 rounded-lg text-sm font-medium text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500 ${
                   tagsLoading
                     ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-md"
+                    : "bg-indigo-600 hover:bg-indigo-700"
                 }`}
               >
                 {tagsLoading ? (
@@ -443,13 +443,13 @@ export default function EditForm({ initialData }: EditFormProps) {
           </div>
 
           {/* Revision History Section */}
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
             <RevisionHistory blogId={blog._id} />
           </div>
 
           {/* Publish/Republish Section */}
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            <h3 className="text-base font-semibold text-gray-900 mb-4">
               {isPublished ? "Republish" : "Publish"}
             </h3>
             <p className="text-sm text-gray-600 mb-4">
@@ -461,10 +461,10 @@ export default function EditForm({ initialData }: EditFormProps) {
               <button
                 onClick={handlePublishClick}
                 disabled={publishLoading}
-                className={`w-full py-3 px-4 rounded-lg text-sm font-semibold text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${
+                className={`w-full py-2.5 px-4 rounded-lg text-sm font-medium text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-green-500 ${
                   publishLoading
                     ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-green-600 hover:bg-green-700 hover:shadow-md"
+                    : "bg-green-600 hover:bg-green-700"
                 }`}
               >
                 {publishLoading ? (
@@ -484,7 +484,7 @@ export default function EditForm({ initialData }: EditFormProps) {
             )}
             <Link
               href="/profile"
-              className="mt-4 block text-center text-sm text-gray-600 hover:text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-2 py-1 transition-colors"
+              className="mt-4 block text-center text-sm text-gray-600 hover:text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1 transition-colors"
             >
               ← Back to Profile
             </Link>

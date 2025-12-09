@@ -60,11 +60,11 @@ export function StatsDashboard() {
         notifications={notifications}
         onDismiss={dismissNotification}
       />
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-gray-200">
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-gray-100">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-1">
+              <h2 className="text-lg font-semibold text-gray-900 mb-1">
                 Statistics Overview
               </h2>
               <p className="text-sm text-gray-600">
@@ -73,7 +73,7 @@ export function StatsDashboard() {
             </div>
             <button
               onClick={fetchStats}
-              className="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition-colors"
             >
               Refresh
             </button>
@@ -149,7 +149,7 @@ export function StatsDashboard() {
             </div>
 
             {/* Comments Breakdown */}
-            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
               <h3 className="text-sm font-semibold text-gray-900 mb-3">
                 Comments
               </h3>
@@ -170,7 +170,7 @@ export function StatsDashboard() {
             </div>
 
             {/* Recent Activity */}
-            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
               <h3 className="text-sm font-semibold text-gray-900 mb-3">
                 Recent Activity (7 days)
               </h3>

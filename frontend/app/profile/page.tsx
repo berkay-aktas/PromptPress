@@ -80,12 +80,50 @@ export default function ProfilePage() {
             status: "published",
           });
 
-          setDrafts((prev) => prev.filter((d) => d._id !== draftId));
+          setDrafts((prev) =>
+            prev.map((d) =>
+              d._id === draftId
+                ? { ...d, status: "published", publishedAt: new Date().toISOString() }
+                : d
+            )
+          );
           showSuccess("Draft published successfully! It will appear on the public Feed.");
         } catch (err: any) {
           const errorMsg = err.response?.data?.error || "Publish failed";
           showError(
             "Failed to publish draft. Please try again.",
+            errorMsg
+          );
+        }
+      },
+    });
+  }
+
+  // Unpublish Post
+  function handleUnpublishClick(postId: string, promptTitle: string) {
+    setConfirmDialog({
+      open: true,
+      title: "Unpublish Post",
+      message: `Are you sure you want to unpublish "${promptTitle}"? It will be removed from the public Feed and become a draft again.`,
+      confirmText: "Unpublish",
+      onConfirm: async () => {
+        setConfirmDialog(null);
+        try {
+          await axios.patch(`${API_BASE_URL}/blogs/update-blogStatus`, {
+            blog_id: postId,
+            status: "created",
+          });
+
+          setDrafts((prev) =>
+            prev.map((d) =>
+              d._id === postId ? { ...d, status: "created" } : d
+            )
+          );
+          showSuccess("Post unpublished successfully. It's now a draft in your workspace.");
+        } catch (err: any) {
+          const errorMsg = err.response?.data?.error || "Unpublish failed";
+          showError(
+            "Failed to unpublish post. Please try again.",
             errorMsg
           );
         }
@@ -119,8 +157,9 @@ export default function ProfilePage() {
     });
   }
 
-  // Filter only non-published drafts
+  // Filter drafts and published posts
   const nonPublishedDrafts = drafts.filter((d) => d.status !== "published");
+  const publishedPosts = drafts.filter((d) => d.status === "published");
 
   return (
     <ProtectedRoute>
@@ -138,51 +177,94 @@ export default function ProfilePage() {
           onCancel={() => setConfirmDialog(null)}
         />
       )}
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
-            Your Drafts Workspace
+        <div className="mb-10">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+            Your Workspace
           </h1>
-          <p className="text-gray-600 text-base sm:text-lg">
-            Manage your unpublished drafts and create new content
+          <p className="text-gray-600 text-base">
+            Manage your drafts and published posts
           </p>
         </div>
 
         {/* Loading State */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-16 sm:py-24">
+          <div className="flex flex-col items-center justify-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
-            <p className="text-gray-600 text-lg">Loading drafts...</p>
+            <p className="text-gray-600">Loading your content...</p>
           </div>
-        ) : nonPublishedDrafts.length === 0 ? (
+        ) : nonPublishedDrafts.length === 0 && publishedPosts.length === 0 ? (
           /* Empty State */
-          <div className="flex flex-col items-center justify-center py-16 sm:py-24 bg-white rounded-lg border-2 border-dashed border-gray-300">
-            <div className="text-6xl mb-4">📝</div>
+          <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-gray-200 p-8">
             <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">
-              No drafts yet
+              No content yet
             </h2>
-            <p className="text-gray-600 text-center mb-6 max-w-md">
+            <p className="text-gray-600 text-center mb-6 max-w-md text-sm">
               Create your first AI-generated blog post to get started
             </p>
             <Link
               href="/create"
-              className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors shadow-sm"
+              className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition-colors"
             >
               Create Your First Draft
             </Link>
           </div>
         ) : (
-          /* Drafts Grid */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {nonPublishedDrafts.map((d) => (
-              <DraftCard
-                key={d._id}
-                draft={d}
-                onDelete={() => handleDeleteClick(d._id, d.prompt)}
-                onPublish={() => handlePublishClick(d._id, d.prompt)}
-              />
-            ))}
+          <div className="space-y-12">
+            {/* Published Posts Section */}
+            {publishedPosts.length > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">Published Posts</h2>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Your published posts visible on the Feed
+                    </p>
+                  </div>
+                  <span className="text-sm text-gray-500">
+                    {publishedPosts.length} {publishedPosts.length === 1 ? "post" : "posts"}
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {publishedPosts.map((post) => (
+                    <PublishedPostCard
+                      key={post._id}
+                      post={post}
+                      onUnpublish={() => handleUnpublishClick(post._id, post.prompt)}
+                      onEdit={() => window.location.href = `/edit/${post._id}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Drafts Section */}
+            {nonPublishedDrafts.length > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">Drafts</h2>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Your unpublished drafts and works in progress
+                    </p>
+                  </div>
+                  <span className="text-sm text-gray-500">
+                    {nonPublishedDrafts.length} {nonPublishedDrafts.length === 1 ? "draft" : "drafts"}
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {nonPublishedDrafts.map((d) => (
+                    <DraftCard
+                      key={d._id}
+                      draft={d}
+                      onDelete={() => handleDeleteClick(d._id, d.prompt)}
+                      onPublish={() => handlePublishClick(d._id, d.prompt)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -211,10 +293,10 @@ function DraftCard({
   const isCreated = draft.status === "created";
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden flex flex-col">
+    <div className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden flex flex-col">
       {/* Card Header */}
       <div className="p-5 pb-3 border-b border-gray-100">
-        <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2 leading-snug">
+        <h3 className="font-semibold text-base text-gray-900 mb-2 line-clamp-2 leading-snug">
           {title || "Untitled Draft"}
         </h3>
         <div className="flex items-center gap-2 flex-wrap">
@@ -233,7 +315,7 @@ function DraftCard({
       <div className="p-5 flex-1 flex flex-col">
         <div className="flex-1 mb-4">
           {isError ? (
-            <div className="bg-red-50 border border-red-200 rounded-md p-3">
+            <div className="bg-red-50 border border-red-100 rounded-lg p-3">
               <p className="text-sm text-red-800 font-medium mb-1">Generation Error</p>
               <p className="text-xs text-red-700 line-clamp-2 break-words">
                 {draft.errorMessage || "An error occurred during generation"}
@@ -256,7 +338,7 @@ function DraftCard({
           {(isCreated || isError) && (
             <Link
               href={`/edit/${draft._id}`}
-              className="flex-1 px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-md hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition-colors text-center"
+              className="flex-1 px-3 py-2 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition-colors text-center"
             >
               Edit
             </Link>
@@ -265,7 +347,7 @@ function DraftCard({
           {isCreated && (
             <button
               onClick={onPublish}
-              className="flex-1 px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1 transition-colors"
+              className="flex-1 px-3 py-2 text-xs font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1 transition-colors"
             >
               Publish
             </button>
@@ -273,10 +355,79 @@ function DraftCard({
 
           <button
             onClick={onDelete}
-            className="px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-md hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 transition-colors"
+            className="px-3 py-2 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 transition-colors"
             aria-label="Delete draft"
           >
             Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PublishedPostCard({
+  post,
+  onUnpublish,
+  onEdit,
+}: {
+  post: IBlogDetail;
+  onUnpublish: () => void;
+  onEdit: () => void;
+}) {
+  const title = post.prompt;
+  const contentPreview = post.aiResult || "No content available.";
+
+  return (
+    <div className="bg-white rounded-xl border border-green-200 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden flex flex-col">
+      {/* Card Header */}
+      <div className="p-5 pb-3 border-b border-gray-100 bg-green-50">
+        <div className="flex items-start justify-between mb-2">
+          <h3 className="font-semibold text-base text-gray-900 line-clamp-2 leading-snug flex-1">
+            {title || "Untitled Post"}
+          </h3>
+          <StatusBadge status="published" />
+        </div>
+        <div className="flex items-center gap-2 flex-wrap mt-2">
+          <span className="text-xs text-gray-500">
+            Published {new Date(post.publishedAt || post.createdAt).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </span>
+        </div>
+      </div>
+
+      {/* Card Content */}
+      <div className="p-5 flex-1 flex flex-col">
+        <div className="flex-1 mb-4">
+          <p className="text-sm text-gray-600 line-clamp-4 break-words whitespace-pre-wrap leading-relaxed">
+            {contentPreview.substring(0, 200)}...
+          </p>
+        </div>
+
+        {/* Card Actions */}
+        <div className="flex items-center gap-2 pt-4 border-t border-gray-100">
+          <Link
+            href={`/post/${post._id}`}
+            className="flex-1 px-3 py-2 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition-colors text-center"
+          >
+            View
+          </Link>
+          <button
+            onClick={onEdit}
+            className="flex-1 px-3 py-2 text-xs font-medium text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-1 transition-colors"
+          >
+            Edit
+          </button>
+          <button
+            onClick={onUnpublish}
+            className="px-3 py-2 text-xs font-medium text-orange-600 bg-orange-50 rounded-lg hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 transition-colors"
+            aria-label="Unpublish post"
+            title="Unpublish this post"
+          >
+            Unpublish
           </button>
         </div>
       </div>

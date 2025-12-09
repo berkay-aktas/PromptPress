@@ -136,11 +136,11 @@ export function CommentModeration() {
         />
       )}
 
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-gray-200">
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-gray-100">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-1">
+              <h2 className="text-lg font-semibold text-gray-900 mb-1">
                 Comment Moderation
               </h2>
               <p className="text-sm text-gray-600">
@@ -150,30 +150,30 @@ export function CommentModeration() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setFilter("all")}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                   filter === "all"
-                    ? "bg-indigo-100 text-indigo-700"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    ? "bg-indigo-50 text-indigo-700"
+                    : "bg-gray-50 text-gray-700 hover:bg-gray-100"
                 }`}
               >
                 All ({comments.length})
               </button>
               <button
                 onClick={() => setFilter("visible")}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                   filter === "visible"
-                    ? "bg-indigo-100 text-indigo-700"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    ? "bg-indigo-50 text-indigo-700"
+                    : "bg-gray-50 text-gray-700 hover:bg-gray-100"
                 }`}
               >
                 Visible ({comments.filter((c) => c.status === "visible").length})
               </button>
               <button
                 onClick={() => setFilter("hidden")}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                   filter === "hidden"
-                    ? "bg-indigo-100 text-indigo-700"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    ? "bg-indigo-50 text-indigo-700"
+                    : "bg-gray-50 text-gray-700 hover:bg-gray-100"
                 }`}
               >
                 Hidden ({comments.filter((c) => c.status === "hidden").length})
@@ -197,7 +197,7 @@ export function CommentModeration() {
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-gray-100">
             {filteredComments.map((comment) => (
               <div key={comment._id} className="p-6 hover:bg-gray-50 transition-colors">
                 <div className="flex items-start justify-between gap-4">
@@ -238,7 +238,7 @@ export function CommentModeration() {
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <button
                       onClick={() => handleToggleStatus(comment)}
-                      className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                      className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                         comment.status === "visible"
                           ? "text-orange-700 bg-orange-50 hover:bg-orange-100"
                           : "text-green-700 bg-green-50 hover:bg-green-100"
@@ -248,7 +248,7 @@ export function CommentModeration() {
                     </button>
                     <button
                       onClick={() => handleDelete(comment)}
-                      className="px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 rounded-md hover:bg-red-100 transition-colors"
+                      className="px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
                     >
                       Delete
                     </button>

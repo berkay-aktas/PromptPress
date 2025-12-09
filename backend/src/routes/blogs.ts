@@ -3,6 +3,7 @@ import { z } from "zod";
 import Blog from "../models/Blog.js";
 import Tag from "../models/Tag.js";
 import Revision from "../models/Revision.js";
+import User from "../models/User.js";
 import { generateBlog, updateBlog } from "../services/ai.js";
 import { AuthRequest, optionalAuth } from "../middleware/auth.js";
 import { Types } from "mongoose";
@@ -17,6 +18,10 @@ const createSchema = z.object({
   
   const getByIdQuery = z.object({
     blog_id: z.string().min(1, "blog_id required"),
+  });
+
+  const getByAuthorQuery = z.object({
+    author_id: z.string().min(1, "author_id required"),
   });
   
   const updateStatusSchema = z.object({
@@ -100,6 +105,53 @@ r.get("/get-by-id", async (req, res) => {
     if (!blog) return res.status(404).json({ error: "not found" });
 
     res.json(blog);
+});
+
+// Get posts by author (user ID)
+r.get("/get-by-author", async (req, res) => {
+    const parsed = getByAuthorQuery.safeParse({ author_id: String(req.query.author_id || "") });
+    if (!parsed.success) return res.status(400).json({ error: "author_id required" });
+
+    try {
+        // Try to find user by ID first
+        let user = await User.findById(parsed.data.author_id).lean();
+        
+        // If user not found by ID, try to find by name (for backward compatibility)
+        if (!user) {
+            // This handles cases where author_id might be a name string
+            const blogs = await Blog.find({ author: parsed.data.author_id }).limit(1).lean();
+            if (blogs.length > 0 && blogs[0].authorId) {
+                user = await User.findById(blogs[0].authorId).lean();
+            }
+        }
+
+        // Get published posts by this author
+        const posts = await Blog.find({
+            $or: [
+                { authorId: new Types.ObjectId(parsed.data.author_id) },
+                { author: parsed.data.author_id }
+            ],
+            status: "published"
+        })
+        .populate("tags", "name slug")
+        .sort({ publishedAt: -1, createdAt: -1 })
+        .lean();
+
+        res.json({
+            user: user ? {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                createdAt: user.createdAt,
+            } : null,
+            posts: posts,
+        });
+    } catch (e: any) {
+        return res.status(500).json({
+            error: e?.message || "failed to fetch author posts",
+        });
+    }
 });
 
 r.get("/get-allPublished", async (req, res) => {

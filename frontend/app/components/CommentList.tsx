@@ -48,8 +48,8 @@ export function CommentList({ comments, onCommentDeleted }: CommentListProps) {
 
   if (comments.length === 0) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-        <p className="text-gray-500 text-center">No comments yet. Be the first to comment!</p>
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+        <p className="text-gray-500 text-center text-sm">No comments yet. Be the first to comment!</p>
       </div>
     );
   }
@@ -61,13 +61,13 @@ export function CommentList({ comments, onCommentDeleted }: CommentListProps) {
         onDismiss={dismissNotification}
       />
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <h3 className="text-base font-semibold text-gray-900 mb-4">
           Comments ({comments.length})
         </h3>
         {comments.map((comment) => (
           <div
             key={comment._id}
-            className="bg-white rounded-lg border border-gray-200 shadow-sm p-5"
+            className="bg-white rounded-xl border border-gray-100 shadow-sm p-5"
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
@@ -92,7 +92,7 @@ export function CommentList({ comments, onCommentDeleted }: CommentListProps) {
               {canDelete(comment) && (
                 <button
                   onClick={() => handleDelete(comment._id)}
-                  className="flex-shrink-0 text-red-600 hover:text-red-700 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded px-2 py-1 transition-colors"
+                  className="flex-shrink-0 text-red-600 hover:text-red-700 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 rounded px-2 py-1 transition-colors"
                   aria-label="Delete comment"
                 >
                   Delete

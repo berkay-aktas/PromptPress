@@ -76,22 +76,22 @@ export default function RegisterPage() {
       />
       <div className="max-w-md mx-auto">
         {/* Page Header */}
-        <div className="mb-8">
+        <div className="mb-10">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
             Create Account
           </h1>
-          <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
+          <p className="text-gray-600 text-base leading-relaxed">
             Sign up to start creating and publishing blog posts with AI assistance.
           </p>
         </div>
 
         {/* Form Card */}
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 sm:p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 sm:p-8">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label
                 htmlFor="name"
-                className="block text-sm font-semibold text-gray-900 mb-2"
+                className="block text-xs font-medium text-gray-600 mb-1.5"
               >
                 Name
               </label>
@@ -100,7 +100,7 @@ export default function RegisterPage() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-150 text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Your full name"
                 disabled={isLoading}
                 required
@@ -110,7 +110,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-semibold text-gray-900 mb-2"
+                className="block text-xs font-medium text-gray-600 mb-1.5"
               >
                 Email
               </label>
@@ -119,7 +119,7 @@ export default function RegisterPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-150 text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="your.email@example.com"
                 disabled={isLoading}
                 required
@@ -129,7 +129,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-semibold text-gray-900 mb-2"
+                className="block text-xs font-medium text-gray-600 mb-1.5"
               >
                 Password
               </label>
@@ -138,13 +138,13 @@ export default function RegisterPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-150 text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="At least 6 characters"
                 disabled={isLoading}
                 required
                 minLength={6}
               />
-              <p className="mt-2 text-xs text-gray-500">
+              <p className="mt-1.5 text-xs text-gray-500">
                 {password.length}/6 minimum characters
               </p>
             </div>
@@ -152,7 +152,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm font-semibold text-gray-900 mb-2"
+                className="block text-xs font-medium text-gray-600 mb-1.5"
               >
                 Confirm Password
               </label>
@@ -161,7 +161,7 @@ export default function RegisterPage() {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-150 text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="Re-enter your password"
                 disabled={isLoading}
                 required
@@ -169,10 +169,10 @@ export default function RegisterPage() {
               />
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-5 border-t border-gray-100">
               <Link
                 href="/"
-                className="text-sm text-gray-600 hover:text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-2 py-1 transition-colors"
+                className="text-sm text-gray-600 hover:text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1 transition-colors"
               >
                 ← Back to Home
               </Link>
@@ -188,7 +188,7 @@ export default function RegisterPage() {
                   password !== confirmPassword ||
                   password.length < 6
                 }
-                className={`w-full sm:w-auto px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+                className={`w-full sm:w-auto px-5 py-2.5 border border-transparent text-sm font-medium rounded-lg text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500 ${
                   isLoading ||
                   !email.trim() ||
                   !name.trim() ||
@@ -197,7 +197,7 @@ export default function RegisterPage() {
                   password !== confirmPassword ||
                   password.length < 6
                     ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-md"
+                    : "bg-indigo-600 hover:bg-indigo-700"
                 }`}
               >
                 {isLoading ? (
@@ -214,12 +214,12 @@ export default function RegisterPage() {
         </div>
 
         {/* Login Link */}
-        <div className="mt-6 text-center">
+        <div className="mt-8 text-center">
           <p className="text-sm text-gray-600">
             Already have an account?{" "}
             <Link
               href="/login"
-              className="text-indigo-600 hover:text-indigo-700 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-1 transition-colors"
+              className="text-indigo-600 hover:text-indigo-700 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-1 transition-colors"
             >
               Login here
             </Link>

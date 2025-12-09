@@ -23,7 +23,7 @@ export default function RootLayout({
         <AuthProvider>
           <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
             {/* HEADER: Navigation Bar */}
-            <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
+            <header className="bg-white border-b border-gray-100 sticky top-0 z-40">
               <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                   {/* Logo/Title */}
@@ -40,14 +40,14 @@ export default function RootLayout({
             </header>
 
           {/* MAIN: Dynamic Content Area */}
-          <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
             {children}
           </main>
 
             {/* FOOTER */}
-            <footer className="bg-white border-t border-gray-200 mt-auto">
-              <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                <p className="text-center text-sm text-gray-500">
+            <footer className="bg-white border-t border-gray-100 mt-auto">
+              <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <p className="text-center text-xs text-gray-500">
                   © 2025 Prompt Press - AI Powered
                 </p>
               </div>

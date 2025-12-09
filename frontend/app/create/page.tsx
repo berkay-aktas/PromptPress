@@ -90,24 +90,24 @@ export default function CreateDraftPage() {
         notifications={notifications}
         onDismiss={dismissNotification}
       />
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6">
         {/* Page Header */}
-        <div className="mb-8">
+        <div className="mb-10">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
             Create New Draft
           </h1>
-          <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
+          <p className="text-gray-600 text-base leading-relaxed">
             Enter a topic or idea, and our AI will generate a complete blog post draft for you.
           </p>
         </div>
 
         {/* Form Card */}
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 sm:p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 sm:p-8">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label
                 htmlFor="prompt"
-                className="block text-sm font-semibold text-gray-900 mb-2"
+                className="block text-xs font-medium text-gray-600 mb-1.5"
               >
                 Topic / Prompt
               </label>
@@ -119,13 +119,13 @@ export default function CreateDraftPage() {
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 rows={5}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-150 text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm text-gray-900 placeholder-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed"
                 placeholder="E.g., The societal impact of personalized AI assistants, or How to build better habits using technology..."
                 disabled={isLoading}
                 required
                 minLength={3}
               />
-              <p className="mt-2 text-xs text-gray-500">
+              <p className="mt-1.5 text-xs text-gray-500">
                 {prompt.length}/3 minimum characters
               </p>
             </div>
@@ -133,14 +133,14 @@ export default function CreateDraftPage() {
             <div>
               <label
                 htmlFor="tags"
-                className="block text-sm font-semibold text-gray-900 mb-2"
+                className="block text-xs font-medium text-gray-600 mb-1.5"
               >
                 Tags (Optional)
               </label>
               <p className="text-sm text-gray-500 mb-3">
                 Select tags to help organize and categorize your post.
               </p>
-              <div className="flex flex-wrap gap-2 min-h-[60px] p-3 border border-gray-300 rounded-lg bg-gray-50">
+              <div className="flex flex-wrap gap-2 min-h-[60px] p-3 border border-gray-200 rounded-lg bg-gray-50">
                 {availableTags.length === 0 ? (
                   <p className="text-sm text-gray-500 italic">
                     No tags available. Create tags in the admin panel.
@@ -157,10 +157,10 @@ export default function CreateDraftPage() {
                             : [...prev, tag._id]
                         );
                       }}
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                         selectedTags.includes(tag._id)
-                          ? "bg-indigo-600 text-white shadow-sm"
-                          : "bg-white text-gray-700 border border-gray-300 hover:border-indigo-300 hover:bg-indigo-50"
+                          ? "bg-indigo-600 text-white"
+                          : "bg-white text-gray-700 border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50"
                       }`}
                     >
                       {tag.name}
@@ -175,10 +175,10 @@ export default function CreateDraftPage() {
               )}
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-5 border-t border-gray-100">
               <Link
                 href="/profile"
-                className="text-sm text-gray-600 hover:text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-2 py-1 transition-colors"
+                className="text-sm text-gray-600 hover:text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1 transition-colors"
               >
                 ← Back to Profile
               </Link>
@@ -186,10 +186,10 @@ export default function CreateDraftPage() {
               <button
                 type="submit"
                 disabled={isLoading || prompt.trim().length < 3}
-                className={`w-full sm:w-auto px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+                className={`w-full sm:w-auto px-5 py-2.5 border border-transparent text-sm font-medium rounded-lg text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500 ${
                   isLoading || prompt.trim().length < 3
                     ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-md"
+                    : "bg-indigo-600 hover:bg-indigo-700"
                 }`}
               >
                 {isLoading ? (
@@ -206,7 +206,7 @@ export default function CreateDraftPage() {
         </div>
 
         {/* Help Text */}
-        <div className="mt-6 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
+        <div className="mt-8 p-4 bg-indigo-50 border border-indigo-100 rounded-xl">
           <p className="text-sm text-indigo-900">
             <strong>Tip:</strong> The AI will generate a full article based on your prompt. 
             You can edit and refine it after generation in your drafts workspace.

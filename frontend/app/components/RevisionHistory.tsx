@@ -39,20 +39,20 @@ export function RevisionHistory({ blogId }: RevisionHistoryProps) {
     return (
       <button
         onClick={() => setExpanded(true)}
-        className="w-full py-2 px-4 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+        className="w-full py-2 px-4 text-sm font-medium text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition-colors"
       >
-        📜 View Edit History
+        View Edit History
       </button>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+    <div>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Edit History</h3>
+        <h3 className="text-base font-semibold text-gray-900">Edit History</h3>
         <button
           onClick={() => setExpanded(false)}
-          className="text-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-2 py-1 transition-colors"
+          className="text-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1 transition-colors"
         >
           Close
         </button>
@@ -76,7 +76,7 @@ export function RevisionHistory({ blogId }: RevisionHistoryProps) {
           {revisions.map((revision, index) => (
             <div
               key={revision._id}
-              className="border-l-4 border-indigo-500 pl-4 py-2 bg-gray-50 rounded-r"
+              className="border-l-4 border-indigo-500 pl-4 py-3 bg-gray-50 rounded-r"
             >
               <div className="flex items-start justify-between mb-2">
                 <div className="flex-1">
