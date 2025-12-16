@@ -20,6 +20,7 @@ export default function AdminPage() {
   const [posts, setPosts] = useState<IBlogDetail[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const { notifications, dismissNotification, showSuccess, showError } =
     useNotifications();
 
@@ -78,6 +79,35 @@ export default function AdminPage() {
       },
     });
   }
+
+  // Filter posts based on search query
+  const filteredPosts = React.useMemo(() => {
+    if (!searchQuery.trim()) {
+      return posts;
+    }
+
+    const query = searchQuery.toLowerCase().trim();
+    return posts.filter((post) => {
+      // Search in prompt/title
+      const promptMatch = post.prompt?.toLowerCase().includes(query);
+      
+      // Search in author
+      const authorMatch = post.author?.toLowerCase().includes(query);
+      
+      // Search in status
+      const statusMatch = post.status?.toLowerCase().includes(query);
+      
+      // Search in content (aiResult)
+      const contentMatch = post.aiResult?.toLowerCase().includes(query);
+      
+      // Search in tags
+      const tagsMatch = post.tags?.some(tag => 
+        tag.name.toLowerCase().includes(query)
+      );
+
+      return promptMatch || authorMatch || statusMatch || contentMatch || tagsMatch;
+    });
+  }, [posts, searchQuery]);
 
   // Toggle Publish/Unpublish
   function handleTogglePublishClick(post: IBlogDetail) {
@@ -142,10 +172,10 @@ export default function AdminPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Page Header */}
         <div className="mb-10">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+          <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] mb-3">
             Admin Management
           </h1>
-          <p className="text-gray-600 text-base">
+          <p className="text-[var(--text-secondary)] text-base">
             Manage all posts and drafts in the system
           </p>
         </div>
@@ -158,8 +188,8 @@ export default function AdminPage() {
         {/* Loading State */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
-            <p className="text-gray-600">Loading posts...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--primary-600)] mb-4"></div>
+            <p className="text-[var(--text-secondary)]">Loading posts...</p>
           </div>
         ) : error ? (
           /* Error State */
@@ -170,7 +200,7 @@ export default function AdminPage() {
             <p className="text-gray-600 text-center mb-6 max-w-md text-sm">{error}</p>
             <button
               onClick={fetchAllPosts}
-              className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition-colors"
+              className="gradient-primary text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-offset-1 transition-all shadow-primary"
             >
               Try Again
             </button>
@@ -186,7 +216,7 @@ export default function AdminPage() {
             </p>
             <Link
               href="/create"
-              className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition-colors"
+              className="gradient-primary text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-offset-1 transition-all shadow-primary"
             >
               Create First Draft
             </Link>
@@ -194,6 +224,46 @@ export default function AdminPage() {
         ) : (
           /* Posts Table/List */
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+            {/* Search Bar */}
+            <div className="p-5 sm:p-6 border-b border-gray-100">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search blogs by title, author, status, or content..."
+                  className="w-full px-4 py-2.5 pl-10 border border-[var(--card-border)] rounded-lg focus:ring-2 focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)] transition-all text-[var(--text-primary)] placeholder-gray-400 bg-white text-sm"
+                />
+                <svg
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+              {searchQuery && (
+                <p className="mt-2 text-xs text-[var(--text-muted)]">
+                  Showing {filteredPosts.length} of {posts.length} posts
+                </p>
+              )}
+            </div>
             {/* Desktop Table View */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
@@ -217,7 +287,7 @@ export default function AdminPage() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-100">
-                  {posts.map((post) => (
+                  {filteredPosts.map((post) => (
                     <PostTableRow
                       key={post._id}
                       post={post}
@@ -232,7 +302,7 @@ export default function AdminPage() {
 
             {/* Mobile Card View */}
             <div className="md:hidden divide-y divide-gray-100">
-              {posts.map((post) => (
+              {filteredPosts.map((post) => (
                 <PostCardRow
                   key={post._id}
                   post={post}
@@ -274,7 +344,7 @@ function PostTableRow({
   const canEdit = post.status === "created" || post.status === "error";
 
   return (
-    <tr className="hover:bg-indigo-50/30 transition-colors">
+    <tr className="hover:bg-[var(--primary-50)]/30 transition-colors">
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="text-sm font-medium text-gray-900 max-w-xs truncate">
           {post.prompt || "Untitled"}
@@ -298,7 +368,7 @@ function PostTableRow({
           {canEdit && (
             <Link
               href={`/edit/${post._id}`}
-              className="text-indigo-600 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1 transition-colors"
+              className="text-[var(--primary-600)] hover:text-[var(--primary-700)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-offset-1 rounded px-2 py-1 transition-colors"
             >
               Edit
             </Link>
@@ -365,7 +435,7 @@ function PostCardRow({
         {canEdit && (
           <Link
             href={`/edit/${post._id}`}
-            className="px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-md hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition-colors"
+            className="px-3 py-1.5 text-xs font-medium text-[var(--primary-600)] bg-[var(--primary-50)] rounded-md hover:bg-[var(--primary-100)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-offset-1 transition-colors"
           >
             Edit
           </Link>

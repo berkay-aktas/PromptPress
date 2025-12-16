@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { IComment } from "@/types/Comment";
@@ -17,6 +17,7 @@ export function CommentModeration() {
   const [comments, setComments] = useState<IComment[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "visible" | "hidden">("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const { token } = useAuth();
   const { notifications, dismissNotification, showSuccess, showError } =
     useNotifications();
@@ -114,10 +115,34 @@ export function CommentModeration() {
     });
   };
 
-  const filteredComments =
-    filter === "all"
+  // Filter comments based on status and search query
+  const filteredComments = React.useMemo(() => {
+    let filtered = filter === "all"
       ? comments
       : comments.filter((c) => c.status === filter);
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter((comment) => {
+        // Search in comment text
+        const textMatch = comment.text?.toLowerCase().includes(query);
+        
+        // Search in user name
+        const userNameMatch = comment.user?.name?.toLowerCase().includes(query);
+        
+        // Search in user email
+        const userEmailMatch = comment.user?.email?.toLowerCase().includes(query);
+        
+        // Search in blog title/prompt (if available)
+        const blogTitleMatch = typeof comment.blog === "object" && 
+          comment.blog?.prompt?.toLowerCase().includes(query);
+
+        return textMatch || userNameMatch || userEmailMatch || blogTitleMatch;
+      });
+    }
+
+    return filtered;
+  }, [comments, filter, searchQuery]);
 
   return (
     <>
@@ -138,21 +163,22 @@ export function CommentModeration() {
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-gray-100">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-1">
-                Comment Moderation
-              </h2>
-              <p className="text-sm text-gray-600">
-                Manage and moderate comments on published posts
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-1">
+                  Comment Moderation
+                </h2>
+                <p className="text-sm text-[var(--text-secondary)]">
+                  Manage and moderate comments on published posts
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
               <button
                 onClick={() => setFilter("all")}
                 className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                   filter === "all"
-                    ? "bg-indigo-50 text-indigo-700"
+                    ? "bg-[var(--primary-50)] text-[var(--primary-700)]"
                     : "bg-gray-50 text-gray-700 hover:bg-gray-100"
                 }`}
               >
@@ -162,7 +188,7 @@ export function CommentModeration() {
                 onClick={() => setFilter("visible")}
                 className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                   filter === "visible"
-                    ? "bg-indigo-50 text-indigo-700"
+                    ? "bg-[var(--primary-50)] text-[var(--primary-700)]"
                     : "bg-gray-50 text-gray-700 hover:bg-gray-100"
                 }`}
               >
@@ -172,25 +198,65 @@ export function CommentModeration() {
                 onClick={() => setFilter("hidden")}
                 className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                   filter === "hidden"
-                    ? "bg-indigo-50 text-indigo-700"
+                    ? "bg-[var(--primary-50)] text-[var(--primary-700)]"
                     : "bg-gray-50 text-gray-700 hover:bg-gray-100"
                 }`}
               >
                 Hidden ({comments.filter((c) => c.status === "hidden").length})
               </button>
+              </div>
             </div>
+          
+            {/* Search Bar */}
+            <div className="relative mt-4">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search comments by text, user name, email, or blog title..."
+                className="w-full px-4 py-2.5 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--primary-500)] focus:border-[var(--primary-500)] transition-all text-[var(--text-primary)] placeholder-gray-400 bg-white text-sm"
+              />
+              <svg
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
+            {searchQuery && (
+              <p className="mt-2 text-xs text-[var(--text-muted)]">
+                Showing {filteredComments.length} of {filter === "all" ? comments.length : comments.filter((c) => c.status === filter).length} comments
+              </p>
+            )}
           </div>
         </div>
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mb-2"></div>
-            <p className="text-gray-600 text-sm">Loading comments...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--primary-600)] mb-2"></div>
+            <p className="text-[var(--text-secondary)] text-sm">Loading comments...</p>
           </div>
         ) : filteredComments.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12">
             <div className="text-4xl mb-2">💬</div>
-            <p className="text-gray-600 text-sm">
+            <p className="text-[var(--text-secondary)] text-sm">
               {filter === "all"
                 ? "No comments yet"
                 : `No ${filter} comments`}
@@ -230,7 +296,7 @@ export function CommentModeration() {
                     </p>
                     <Link
                       href={`/post/${typeof comment.blog === "string" ? comment.blog : comment.blog._id}`}
-                      className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
+                      className="text-xs text-[var(--primary-600)] hover:text-[var(--primary-700)] font-medium"
                     >
                       View Post →
                     </Link>
