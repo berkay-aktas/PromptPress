@@ -142,7 +142,7 @@ export default function AuthorPage() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6">
       <Link
         href="/feed"
-        className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 font-medium mb-8 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1 transition-colors"
+        className="inline-flex items-center text-sm text-gray-600 hover:text-indigo-600 font-medium mb-8 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1 transition-colors"
       >
         ← Back to Feed
       </Link>
@@ -198,7 +198,7 @@ export default function AuthorPage() {
                 <Link
                   key={post._id}
                   href={`/post/${post._id}`}
-                  className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 block overflow-hidden group h-full flex flex-col"
+                  className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all duration-200 block overflow-hidden group h-full flex flex-col"
                 >
                   <div className="p-6 flex flex-col flex-grow">
                     <h3 className="text-lg font-bold text-gray-900 mb-3 leading-snug group-hover:text-indigo-600 transition-colors">

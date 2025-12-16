@@ -5,7 +5,7 @@ export default function Home() {
     <div className="flex min-h-[calc(100vh-12rem)] items-center justify-center bg-white">
       <main className="flex flex-col items-center justify-center text-center px-4 py-16 sm:py-20 max-w-5xl mx-auto">
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-5 sm:mb-6 leading-tight">
-          Welcome to Prompt Press
+          Welcome to Prompt <span className="text-indigo-600">Press</span>
         </h1>
         <p className="text-lg sm:text-xl text-gray-600 mb-10 sm:mb-12 leading-relaxed max-w-2xl">
           AI-powered drafting and publishing platform. Create, edit, and publish
@@ -28,7 +28,7 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
-          <div className="bg-white p-6 sm:p-8 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+          <div className="bg-white p-6 sm:p-8 rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all">
             <div className="text-3xl mb-4">🤖</div>
             <h3 className="text-base font-semibold text-gray-900 mb-2">
               AI-Powered
@@ -38,7 +38,7 @@ export default function Home() {
               technology.
             </p>
           </div>
-          <div className="bg-white p-6 sm:p-8 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+          <div className="bg-white p-6 sm:p-8 rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all">
             <div className="text-3xl mb-4">✏️</div>
             <h3 className="text-base font-semibold text-gray-900 mb-2">
               Smart Editing
@@ -48,7 +48,7 @@ export default function Home() {
               with natural language instructions.
             </p>
           </div>
-          <div className="bg-white p-6 sm:p-8 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+          <div className="bg-white p-6 sm:p-8 rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all">
             <div className="text-3xl mb-4">📤</div>
             <h3 className="text-base font-semibold text-gray-900 mb-2">
               Easy Publishing

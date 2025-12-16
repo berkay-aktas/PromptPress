@@ -484,7 +484,7 @@ export default function EditForm({ initialData }: EditFormProps) {
             )}
             <Link
               href="/profile"
-              className="mt-4 block text-center text-sm text-gray-600 hover:text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1 transition-colors"
+              className="mt-4 block text-center text-sm text-gray-600 hover:text-indigo-600 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1 transition-colors"
             >
               ← Back to Profile
             </Link>

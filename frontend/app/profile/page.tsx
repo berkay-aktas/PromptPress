@@ -293,7 +293,7 @@ function DraftCard({
   const isCreated = draft.status === "created";
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden flex flex-col">
+    <div className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all duration-200 overflow-hidden flex flex-col">
       {/* Card Header */}
       <div className="p-5 pb-3 border-b border-gray-100">
         <h3 className="font-semibold text-base text-gray-900 mb-2 line-clamp-2 leading-snug">
@@ -379,7 +379,7 @@ function PublishedPostCard({
   const contentPreview = post.aiResult || "No content available.";
 
   return (
-    <div className="bg-white rounded-xl border border-green-200 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden flex flex-col">
+    <div className="bg-white rounded-xl border border-green-200 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all duration-200 overflow-hidden flex flex-col">
       {/* Card Header */}
       <div className="p-5 pb-3 border-b border-gray-100 bg-green-50">
         <div className="flex items-start justify-between mb-2">

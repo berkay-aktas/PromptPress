@@ -17,7 +17,7 @@ export function Navigation() {
     <nav className="flex items-center gap-4 sm:gap-5">
       <Link
         href="/feed"
-        className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1"
+        className="text-sm text-[var(--text-secondary)] hover:text-[var(--primary-600)] font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-offset-1 rounded px-2 py-1"
       >
         Feed
       </Link>
@@ -26,7 +26,7 @@ export function Navigation() {
         <>
           <Link
             href="/profile"
-            className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1"
+            className="text-sm text-[var(--text-secondary)] hover:text-[var(--primary-600)] font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-offset-1 rounded px-2 py-1"
           >
             Profile
           </Link>
@@ -34,7 +34,7 @@ export function Navigation() {
           {user?.role === "admin" && (
             <Link
               href="/admin"
-              className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1"
+              className="text-sm text-[var(--text-secondary)] hover:text-[var(--primary-600)] font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-offset-1 rounded px-2 py-1"
             >
               Admin
             </Link>
@@ -42,18 +42,18 @@ export function Navigation() {
 
           <Link
             href="/create"
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition-colors"
+            className="gradient-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-offset-1 transition-all shadow-primary hover:shadow-primary-md"
           >
             + New Draft
           </Link>
 
-          <div className="flex items-center gap-3 pl-3 border-l border-gray-200">
-            <span className="text-xs text-gray-500 hidden sm:inline">
+          <div className="flex items-center gap-3 pl-3 border-l border-[var(--card-border)]">
+            <span className="text-xs text-[var(--text-muted)] hidden sm:inline">
               {user?.name}
             </span>
             <button
               onClick={handleLogout}
-              className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1"
+              className="text-sm text-[var(--text-secondary)] hover:text-[var(--primary-600)] font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-offset-1 rounded px-2 py-1"
             >
               Logout
             </button>
@@ -63,13 +63,13 @@ export function Navigation() {
         <>
           <Link
             href="/login"
-            className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1"
+            className="text-sm text-[var(--text-secondary)] hover:text-[var(--primary-600)] font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-offset-1 rounded px-2 py-1"
           >
             Login
           </Link>
           <Link
             href="/register"
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition-colors"
+            className="gradient-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[var(--primary-500)] focus:ring-offset-1 transition-all shadow-primary hover:shadow-primary-md"
           >
             Sign Up
           </Link>

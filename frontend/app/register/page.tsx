@@ -172,7 +172,7 @@ export default function RegisterPage() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-5 border-t border-gray-100">
               <Link
                 href="/"
-                className="text-sm text-gray-600 hover:text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1 transition-colors"
+                className="text-sm text-gray-600 hover:text-indigo-600 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1 transition-colors"
               >
                 ← Back to Home
               </Link>

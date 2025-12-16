@@ -274,7 +274,7 @@ function PostTableRow({
   const canEdit = post.status === "created" || post.status === "error";
 
   return (
-    <tr className="hover:bg-gray-50 transition-colors">
+    <tr className="hover:bg-indigo-50/30 transition-colors">
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="text-sm font-medium text-gray-900 max-w-xs truncate">
           {post.prompt || "Untitled"}
@@ -298,7 +298,7 @@ function PostTableRow({
           {canEdit && (
             <Link
               href={`/edit/${post._id}`}
-              className="text-indigo-600 hover:text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1"
+              className="text-indigo-600 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1 transition-colors"
             >
               Edit
             </Link>

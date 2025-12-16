@@ -95,7 +95,7 @@ const PostCard = ({ post, onTagClick }: { post: IBlogDetail; onTagClick?: (tagId
   return (
     <Link
       href={`/post/${post._id}`}
-      className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 block overflow-hidden group h-full flex flex-col"
+      className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all duration-200 block overflow-hidden group h-full flex flex-col"
     >
       <div className="p-6 flex flex-col flex-grow">
         {/* Title */}
@@ -288,10 +288,10 @@ export default function FeedPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+          <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-primary)] mb-3">
             Public Feed
           </h1>
-          <p className="text-gray-600 text-base">
+          <p className="text-[var(--text-secondary)] text-base">
             Discover published articles from our community
           </p>
         </div>
@@ -364,7 +364,7 @@ export default function FeedPage() {
                         className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                           isSelected
                             ? "bg-indigo-600 text-white"
-                            : "bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100"
+                            : "bg-gray-50 text-gray-700 border border-gray-200 hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-700"
                         }`}
                       >
                         {tag.name}

@@ -167,12 +167,12 @@ export default function PostDetailPage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6">
       <Link
         href="/feed"
-        className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 font-medium mb-8 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1 transition-colors"
+        className="inline-flex items-center text-sm text-gray-600 hover:text-indigo-600 font-medium mb-8 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-2 py-1 transition-colors"
       >
         ← Back to Feed
       </Link>
 
-      <article className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+      <article className="bg-white rounded-xl border border-gray-100 shadow-sm hover:border-indigo-200 transition-colors overflow-hidden">
         <header className="px-6 sm:px-8 py-8 sm:py-10 border-b border-gray-100">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-5 leading-tight">
             {getTitleFromMarkdown(post.aiResult || "") || post.prompt || "Untitled Post"}
