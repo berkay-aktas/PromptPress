@@ -164,16 +164,16 @@ export function CommentModeration() {
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-gray-100">
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
                 <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-1">
-                  Comment Moderation
-                </h2>
+                Comment Moderation
+              </h2>
                 <p className="text-sm text-[var(--text-secondary)]">
-                  Manage and moderate comments on published posts
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
+                Manage and moderate comments on published posts
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => setFilter("all")}
                 className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
@@ -204,7 +204,7 @@ export function CommentModeration() {
               >
                 Hidden ({comments.filter((c) => c.status === "hidden").length})
               </button>
-              </div>
+            </div>
             </div>
           
             {/* Search Bar */}
